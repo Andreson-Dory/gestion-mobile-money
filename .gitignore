@@ -1,9 +1,6 @@
 # Compiled Java classes
 *.class
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
 # Package Files (Build artifacts)
 *.jar
 *.war
@@ -12,8 +9,9 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs
+# Logs
 hs_err_pid*
+*.log
 
 # Build tool directories
 target/
@@ -21,17 +19,16 @@ build/
 bin/
 out/
 
-# IDE Specific (Eclipse/IntelliJ/VSCode)
-.settings/
-.project
-.classpath
+# Eclipse (on garde les fichiers importants !)
 .metadata/
 .recommenders/
+
+# IntelliJ / VSCode
 .idea/
 *.iml
 *.iws
 .vscode/
 
-# Operating System files
+# OS
 .DS_Store
 Thumbs.db
