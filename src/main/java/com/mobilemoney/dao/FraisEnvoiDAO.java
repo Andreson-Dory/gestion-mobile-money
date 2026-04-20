@@ -1,0 +1,113 @@
+package com.mobilemoney.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.mobilemonay.util.DBConnection;
+import com.mobilemoney.model.FraisEnvoi;
+
+public class FraisEnvoiDAO {
+
+	private static final String INSERT_FRAISENVOI_QUERY = "INSERT INTO FRAIS_ENV (idEnv, montant1, montant2, frais_env) VALUES (?, ?, ?, ?);";
+	private static final String SELECT_ALL_FRAISENVOI_QUERY = "SELECT * FROM FRAIS_ENVOI;";
+	private static final String SELECT_FRAISENV_BY_IDENV_QUERY = "SELECT * FROM FRAIS_ENVOI WHERE idEnv= ?;";
+	private static final String UPDATE_FRAISENV_QUERY = "UPDATE FRAIS_ENVOI SET montant1= ?, montant2= ?, frais_env= ? WHERE idEnv= ?;";
+	private static final String DELETE_FRAISENV_QUERY = "DELETE FROM FRAIS_ENVOI WHERE idEnv= ?;";
+	
+	public void insert(FraisEnvoi fe) {
+		
+		try(Connection conn = DBConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(INSERT_FRAISENVOI_QUERY))
+			{	
+				ps.setString(1, fe.getIdEnv());
+				ps.setInt(2, fe.getMontant1());
+				ps.setInt(3, fe.getMontant2());
+				ps.setInt(4, fe.getFraisEnv());
+				
+				ps.executeUpdate();			
+			} catch (SQLException e) {
+				e.printStackTrace();
+			};
+	}
+	
+	public List<FraisEnvoi> findAll() {
+		List<FraisEnvoi> list = new ArrayList<>();
+		
+		try (Connection conn = DBConnection.getConnection();
+	             Statement st = conn.createStatement();
+	             ResultSet rs = st.executeQuery(SELECT_ALL_FRAISENVOI_QUERY)) {
+
+	            while (rs.next()) {
+	            	FraisEnvoi fe = new FraisEnvoi(
+	                        rs.getString("idEnv"),
+	                        rs.getInt("montant1"),
+	                        rs.getInt("montant2"),
+	                        rs.getInt("frais_env")
+	                );
+	                list.add(fe);
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+
+	        return list;
+	}
+	
+	public FraisEnvoi findByIdEnv(String idEnv) {
+		
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(SELECT_FRAISENV_BY_IDENV_QUERY))
+			{
+				ps.setString(1, idEnv);
+		        ResultSet rs = ps.executeQuery();
+				
+
+				if (rs.next()) {
+					return new FraisEnvoi(
+							rs.getString("idEnv"),
+	                        rs.getInt("montant1"),
+	                        rs.getInt("montant2"),
+	                        rs.getInt("frais_env")
+					);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return null;
+	}
+	
+	public void delete(String idEnv) {
+		
+		try (Connection conn = DBConnection.getConnection();
+	             PreparedStatement ps = conn.prepareStatement(DELETE_FRAISENV_QUERY)) {
+
+	            ps.setString(1, idEnv);
+	            ps.executeUpdate();
+
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	}
+	
+	public void update(FraisEnvoi fe) {
+		
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(UPDATE_FRAISENV_QUERY)) 
+			{
+				ps.setInt(1, fe.getMontant1());
+				ps.setInt(2, fe.getMontant2());
+				ps.setInt(3, fe.getFraisEnv());
+				ps.setString(4, fe.getIdEnv());
+				
+				ps.executeUpdate();
+			
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+	}
+}

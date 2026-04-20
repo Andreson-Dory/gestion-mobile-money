@@ -6,10 +6,10 @@ public class Retrait {
 
 	private String idrecep;
 	private String numtel;
-	private String montant;
+	private int montant;
 	private LocalDateTime daterecep;
-	
-	public Retrait(String idrecep, String numtel, String montant, LocalDateTime daterecep) {
+		
+	public Retrait(String idrecep, String numtel, int montant, LocalDateTime daterecep) {
 		super();
 		this.idrecep = idrecep;
 		this.numtel = numtel;
@@ -32,12 +32,12 @@ public class Retrait {
 	public void setNumtel(String numtel) {
 		this.numtel = numtel;
 	}
-
-	public String getMontant() {
+	
+	public int getMontant() {
 		return montant;
 	}
 
-	public void setMontant(String montant) {
+	public void setMontant(int montant) {
 		this.montant = montant;
 	}
 

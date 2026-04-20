@@ -13,7 +13,7 @@ import com.mobilemoney.model.Client;
 
 public class ClientDAO {
 
-	private static final String INSERT_CLIENT_QUERY = "INSERT INTO CLIENT (numtel, nom, sexe, age, solde, email) VALUEs (?, ?, ?, ?, ?, ?);";
+	private static final String INSERT_CLIENT_QUERY = "INSERT INTO CLIENT (numtel, nom, sexe, age, solde, email) VALUES (?, ?, ?, ?, ?, ?);";
 	private static final String SELECT_ALL_CLIENT_QUERY = "SELECT * FROM CLIENT;";
 	private static final String SELECT_CLIENT_BY_NUMTEL_QUERY = "SELECT * FROM CLIENT WHERE numtel = ?;";
 	private static final String UPDATE_CLIENT_QUERY = "UPDATE CLIENT SET nom= ?, sexe= ?, age= ?, solde= ?, email= ? WHERE numtel= ?;";
@@ -24,8 +24,6 @@ public class ClientDAO {
 		try(Connection conn = DBConnection.getConnection();
 			PreparedStatement ps = conn.prepareStatement(INSERT_CLIENT_QUERY))
 		{
-			
-			
 			ps.setString(1, c.getNumtel());
 			ps.setString(2, c.getNom());
 			ps.setString(3, c.getSexe());
@@ -71,7 +69,6 @@ public class ClientDAO {
 			ps.setString(1, numtel);
 	        ResultSet rs = ps.executeQuery();
 			
-
 			if (rs.next()) {
 				return new Client(
 					rs.getString("numtel"),

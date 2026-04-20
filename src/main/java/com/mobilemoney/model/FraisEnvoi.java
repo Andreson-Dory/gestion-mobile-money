@@ -7,12 +7,12 @@ public class FraisEnvoi {
 	private int montant2; 
 	private int fraisEnv;
 	
-	public FraisEnvoi(String idEnv, int montant1, int montant2, int frais_env) {
+	public FraisEnvoi(String idEnv, int montant1, int montant2, int fraisEnv) {
 		super();
 		this.idEnv = idEnv;
 		this.montant1 = montant1;
 		this.montant2 = montant2;
-		this.fraisEnv = frais_env;
+		this.fraisEnv = fraisEnv;
 	}
 
 	public String getIdEnv() {
@@ -31,6 +31,14 @@ public class FraisEnvoi {
 		this.montant1 = montant1;
 	}
 
+	public int getFraisEnv() {
+		return fraisEnv;
+	}
+
+	public void setFraisEnv(int fraisEnv) {
+		this.fraisEnv = fraisEnv;
+	}
+
 	public int getMontant2() {
 		return montant2;
 	}
@@ -38,13 +46,4 @@ public class FraisEnvoi {
 	public void setMontant2(int montant2) {
 		this.montant2 = montant2;
 	}
-
-	public int getFrais_env() {
-		return fraisEnv;
-	}
-
-	public void setFrais_env(int frais_env) {
-		this.fraisEnv = frais_env;
-	}
-	
 }

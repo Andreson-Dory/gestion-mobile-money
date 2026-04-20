@@ -7,12 +7,12 @@ public class FraisRecep {
 	private int montant2; 
 	private int fraisRec;
 	
-	public FraisRecep(String idRec, int montant1, int montant2, int frais_rec) {
+	public FraisRecep(String idRec, int montant1, int montant2, int fraisRec) {
 		super();
 		this.idRec = idRec;
 		this.montant1 = montant1;
 		this.montant2 = montant2;
-		this.fraisRec = frais_rec;
+		this.fraisRec = fraisRec;
 	}
 
 	public String getIdRec() {
@@ -27,6 +27,14 @@ public class FraisRecep {
 		return montant1;
 	}
 
+	public int getFraisRec() {
+		return fraisRec;
+	}
+
+	public void setFraisRec(int fraisRec) {
+		this.fraisRec = fraisRec;
+	}
+
 	public void setMontant1(int montant1) {
 		this.montant1 = montant1;
 	}
@@ -37,14 +45,6 @@ public class FraisRecep {
 
 	public void setMontant2(int montant2) {
 		this.montant2 = montant2;
-	}
-
-	public int getFrais_rec() {
-		return fraisRec;
-	}
-
-	public void setFrais_rec(int frais_rec) {
-		this.fraisRec = frais_rec;
 	}
 	
 }
