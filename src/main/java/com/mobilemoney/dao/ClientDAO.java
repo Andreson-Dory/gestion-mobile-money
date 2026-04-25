@@ -13,10 +13,11 @@ import com.mobilemoney.model.Client;
 
 public class ClientDAO {
 
-	private static final String INSERT_CLIENT_QUERY = "INSERT INTO CLIENT (numtel, nom, sexe, age, solde, email) VALUES (?, ?, ?, ?, ?, ?);";
+	private static final String INSERT_CLIENT_QUERY = "INSERT INTO CLIENT (numtel, nom, sexe, age, mail) VALUES (?, ?, ?, ?, ?);";
 	private static final String SELECT_ALL_CLIENT_QUERY = "SELECT * FROM CLIENT;";
 	private static final String SELECT_CLIENT_BY_NUMTEL_QUERY = "SELECT * FROM CLIENT WHERE numtel = ?;";
-	private static final String UPDATE_CLIENT_QUERY = "UPDATE CLIENT SET nom= ?, sexe= ?, age= ?, solde= ?, email= ? WHERE numtel= ?;";
+	private static final String SEARCH_CLIENT_QUERY = "SELECT * FROM CLIENT WHERE numtel LIKE ? OR nom LIKE ? OR mail LIKE ?;";
+	private static final String UPDATE_CLIENT_QUERY = "UPDATE CLIENT SET nom= ?, sexe= ?, age= ?, solde= ?, mail= ? WHERE numtel= ?;";
 	private static final String DELETE_CLIENT_QUERY = "DELETE FROM CLIENT WHERE numtel= ?;";
 	
 	
@@ -28,8 +29,7 @@ public class ClientDAO {
 			ps.setString(2, c.getNom());
 			ps.setString(3, c.getSexe());
 			ps.setInt(4, c.getAge());
-			ps.setInt(5, c.getSolde());
-			ps.setString(6, c.getMail());
+			ps.setString(5, c.getMail());
 			
 			ps.executeUpdate();			
 		} catch (SQLException e) {
@@ -58,7 +58,7 @@ public class ClientDAO {
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
-
+	
 	        return list;
 	}
 	
@@ -83,6 +83,36 @@ public class ClientDAO {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public List<Client> searchClients(String value) {
+		List<Client> list = new ArrayList<>();
+		
+		try (Connection conn = DBConnection.getConnection();
+			PreparedStatement ps = conn.prepareStatement(SEARCH_CLIENT_QUERY))
+		{
+			String keyword = "%" + value + "%";
+			
+			ps.setString(1, keyword);
+			ps.setString(2, keyword);
+			ps.setString(3, keyword);
+	        ResultSet rs = ps.executeQuery();
+			
+	        while (rs.next()) {
+                Client e = new Client(
+                        rs.getString("numtel"),
+                        rs.getString("nom"),
+                        rs.getString("sexe"),
+                        rs.getInt("age"),
+                        rs.getInt("solde"),
+                        rs.getString("mail")
+                );
+                list.add(e);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 	
 	public void delete(String numtel) {
