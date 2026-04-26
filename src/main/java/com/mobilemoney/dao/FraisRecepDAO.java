@@ -16,6 +16,7 @@ public class FraisRecepDAO {
 	private static final String INSERT_FRAISRECEP_QUERY = "INSERT INTO FRAIS_RECEP (idRec, montant1, montant2, frais_rec) VALUEs (?, ?, ?, ?);";
 	private static final String SELECT_ALL_FRAISRECEP_QUERY = "SELECT * FROM FRAIS_RECEP;";
 	private static final String SELECT_FRAISRECEP_BY_IDREC_QUERY = "SELECT * FROM FRAIS_RECEP WHERE idRec= ?;";
+	private static final String SELECT_FRAISRECEP_BY_MONTANT_QUERY = "SELECT * FROM FRAIS_RECEP WHERE ? BETWEEN montant1 AND montant2;";
 	private static final String UPDATE_FRAISRECEP_QUERY = "UPDATE FRAIS_RECEP SET montant1= ?, montant2= ?, frais_rec= ? WHERE idRec= ?;";
 	private static final String DELETE_FRAISRECEP_QUERY = "DELETE FROM FRAIS_RECEP WHERE idRec= ?;";
 	
@@ -67,6 +68,27 @@ public class FraisRecepDAO {
 		        ResultSet rs = ps.executeQuery();
 				
 
+				if (rs.next()) {
+					return new FraisRecep(
+							rs.getString("idRec"),
+	                        rs.getInt("montant1"),
+	                        rs.getInt("montant2"),
+	                        rs.getInt("frais_rec")
+					);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return null;
+	}
+	
+	public FraisRecep findByMontant(int montant) {
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(SELECT_FRAISRECEP_BY_MONTANT_QUERY))
+			{
+				ps.setInt(1, montant);
+		        ResultSet rs = ps.executeQuery();
+				
 				if (rs.next()) {
 					return new FraisRecep(
 							rs.getString("idRec"),

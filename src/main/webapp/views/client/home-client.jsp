@@ -5,11 +5,10 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Gestion des utilisateurs</title>
-<link rel="stylesheet" href="assets/bootstrap-5.3.8/css/bootstrap.min.css">
+<title>Gestion des clients</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/bootstrap-5.3.8/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/global.css">
-
 </head>
 <body>
 	<div class="d-flex vh-100">
@@ -103,7 +102,8 @@
 					   data-nom="${client.nom}"
 					   data-sexe="${client.sexe}"
 					   data-mail="${client.mail}"
-					   data-age="${client.age}">
+					   data-age="${client.age}"
+					   data-solde="${client.solde}">
 					    <i class="bi bi-pencil"></i>
 					</a>
 				
@@ -168,8 +168,8 @@
 	                                    style="width: 110px"
 	                                    required>
 	                                <option value="">Choisir</option>
-	                                <option value="Homme">Homme</option>
-	                                <option value="Femme">Femme</option>
+	                                <option value="Homme">Masculin</option>
+	                                <option value="Femme">Feminin</option>
 	                            </select>
 	                        </div>	
 	                        <div class="mt-4">
@@ -210,86 +210,94 @@
 	                    </button>
 	                </div>
 	            </form>
-	        </div>
-	    </div>
-	</div>
+		        </div>
+		    </div>
+		</div>
 	
 		<!-- Modal Edition Client -->
 		<div class="modal fade"
-     id="editClientModal"
-     tabindex="-1">
-
-    <div class="modal-dialog modal-dialog-centered modal-lg"
-         style="max-width: 600px;">
-
-        <div class="modal-content mx-1">
-
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold">Modifier un client</h5>
-
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal">
-                </button>
-            </div>
-
-            <form action="${pageContext.request.contextPath}/client/update"
-                  method="post">
-
-                <div class="modal-body">
-
-					<input type="hidden" id="edit_numtel" name="numtel">
-					<div>
-						<label class="form-label">Nom</label>
-                    	<input type="text" 
-                    		   id="edit_nom" 
-                    		   name="nom" 
-                    		   class="form-control">
-                    </div>
-					<div class="mt-4">
-						<label class="form-label">Sexe</label>
-	                    <select id="edit_sexe" 
-	                    	    name="sexe" 
-	                    	    class="form-select" 
-	                    	    style="width: 110px">
-	                        <option>Homme</option>
-	                        <option>Femme</option>
-	                    </select>
+	     id="editClientModal"
+	     tabindex="-1">
+	
+	    <div class="modal-dialog modal-dialog-centered modal-lg"
+	         style="max-width: 600px;">
+	
+	        <div class="modal-content mx-1">
+	
+	            <div class="modal-header">
+	                <h5 class="modal-title fw-bold">Modifier un client</h5>
+	
+	                <button type="button"
+	                        class="btn-close"
+	                        data-bs-dismiss="modal">
+	                </button>
+	            </div>
+	
+	            <form action="${pageContext.request.contextPath}/client/update"
+	                  method="post">
+	
+	                <div class="modal-body">
+	
+						<input type="hidden" id="edit_numtel" name="numtel">
+						<div>
+							<label class="form-label">Nom</label>
+	                    	<input type="text" 
+	                    		   id="edit_nom" 
+	                    		   name="nom" 
+	                    		   class="form-control">
+	                    </div>
+						<div class="mt-4">
+							<label class="form-label">Sexe</label>
+		                    <select id="edit_sexe" 
+		                    	    name="sexe" 
+		                    	    class="form-select" 
+		                    	    style="width: 110px">
+		                        <option>Masculin</option>
+		                        <option>Feminin</option>
+		                    </select>
+		                </div>
+		                <div class="mt-4">
+							<label class="form-label">Email</label>
+	                    	<input type="email" 
+	                    		   id="edit_mail" 
+	                    		   name="mail" 
+	                    		   class="form-control">
+						</div>
+						<div class="mt-4">
+							<label class="form-label">solde</label>
+	                    	<input hidden="true"
+	                    		   type="number" 
+	                    		   id="edit_solde" 
+	                    		   name="solde" 
+	                    		   class="form-control">
+						</div>
+						<div class="mt-4">
+							<label class="form-label">Âge</label>
+	                    	<input type="number" 
+	                    		   id="edit_age" 
+	                    		   name="age" 
+	                    		   class="form-control" 
+	                    		   style="width: 80px">
+						</div>
 	                </div>
-	                <div class="mt-4">
-						<label class="form-label">Email</label>
-                    	<input type="email" 
-                    		   id="edit_mail" 
-                    		   name="mail" 
-                    		   class="form-control">
-					</div>
-					<div class="mt-4">
-						<label class="form-label">Âge</label>
-                    	<input type="number" 
-                    		   id="edit_age" 
-                    		   name="age" 
-                    		   class="form-control" 
-                    		   style="width: 80px">
-					</div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button"
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal">
-                        Annuler
-                    </button>
-
-                    <button type="submit"
-                            class="btn btn-primary">
-                        Modifier
-                    </button>
-                </div>
-           	 </form>
-        	</div>
-    	</div>
-	</div>
-		<script src="assets/bootstrap-5.3.8/js/bootstrap.bundle.min.js"></script>
+	
+	                <div class="modal-footer">
+	                    <button type="button"
+	                            class="btn btn-secondary"
+	                            data-bs-dismiss="modal">
+	                        Annuler
+	                    </button>
+	
+	                    <button type="submit"
+	                            class="btn btn-primary">
+	                        Modifier
+	                    </button>
+	                </div>
+	           	 </form>
+	        	</div>
+	    	</div>
+		</div>
+		<script src="${pageContext.request.contextPath}/assets/bootstrap-5.3.8/js/bootstrap.bundle.min.js"></script>
 		<script>
 			const editModal = document.getElementById('editClientModal');
 			
@@ -302,6 +310,7 @@
 			    document.getElementById('edit_sexe').value = button.getAttribute('data-sexe');
 			    document.getElementById('edit_mail').value = button.getAttribute('data-mail');
 			    document.getElementById('edit_age').value = button.getAttribute('data-age');
+			    document.getElementById('edit_solde').value = button.getAttribute('data-solde');
 			
 			});
 		</script>

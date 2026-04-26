@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,19 +15,45 @@ import com.mobilemoney.model.Retrait;
 
 public class RetraitDAO {
 	
-	private static final String INSERT_RETRAIT_QUERY = "INSERT INTO RETRAIT (idrecep, numtel, montant, daterecep) VALUES (?, ?, ?, ?);";
-	private static final String SELECT_ALL_RETRAIT_QUERY = "SELECT * FROM RETRAIT;";
-	private static final String SELECT_RETRAIT_BY_IDRECEP_QUERY = "SELECT * FROM RETRAIT WHERE idrecep = ?;";
-	private static final String DELETE_RETRAIT_QUERY = "DELETE FROM RETRAIT WHERE idrecep= ?;";
+	private static final String INSERT_RETRAIT_QUERY = "INSERT INTO RETRAIT (numtel, montant) VALUES (?, ?);";
+	private static final String SELECT_ALL_RETRAIT_QUERY = "SELECT \n"
+			+ "    r.idrecep AS idrecep,\n"
+			+ "    r.numtel AS numtel,\n"
+			+ "    r.montant AS montant,\n"
+			+ "    r.daterecep AS daterecep,\n"
+			+ "    c.nom AS nom\n"
+			+ "FROM RETRAIT AS r\n"
+			+ "JOIN CLIENT AS c \n"
+			+ "    ON c.numtel = r.numtel\n"
+			+ "WHERE r.status = 'VALIDE'";
+	private static final String SELECT_RETRAIT_BY_IDRECEP_QUERY = "SELECT \n"
+			+ "r.idrecep AS idrecep,\n"
+			+ "r.numtel AS numtel,\n"
+			+ "r.montant AS montant,\n"
+			+ "r.daterecep AS daterecep,\n"
+			+ "c.nom AS nom\n"
+			+ "FROM RETRAIT AS r\n"
+			+ "JOIN CLIENT AS c \n"
+			+ "		ON c.numtel = r.numtel\n"
+			+ "WHERE r.status = 'VALIDE' AND idrecep = ?;";
+	private static final String SELECT_RETRAIT_BY_DATE_QUERY = "SELECT \n"
+			+ "		r.idrecep AS idrecep,\n"
+			+ "		r.numtel AS numtel,\n"
+			+ "		r.montant AS montant,\n"
+			+ "		r.daterecep AS daterecep,\n"
+			+ "		c.nom AS nom\n"
+			+ "	FROM RETRAIT AS r\n"
+			+ "	JOIN CLIENT AS c \n"
+			+ "		ON c.numtel = r.numtel\n"
+			+ "	WHERE r.status = 'VALIDE' AND DATE(r.daterecep) = ?;";
+	private static final String DELETE_RETRAIT_QUERY = "UPDATE RETRAIT set status = 'ANNULE' WHERE idrecep= ?;";
 	
 	public void insert (Retrait r) {
 		try(Connection conn = DBConnection.getConnection();
 			PreparedStatement ps = conn.prepareStatement(INSERT_RETRAIT_QUERY))
 		{
-			ps.setString(1, r.getIdrecep());
-			ps.setString(2, r.getNumtel());
-			ps.setInt(3, r.getMontant());
-			ps.setTimestamp(4, Timestamp.valueOf(r.getDaterecep()));
+			ps.setString(1, r.getNumtel());
+			ps.setInt(2, r.getMontant());
 			
 			ps.executeUpdate();			
 		} catch (SQLException e) {
@@ -46,7 +73,8 @@ public class RetraitDAO {
 	                        rs.getString("idrecep"),
 	                        rs.getString("numtel"),
 	                        rs.getInt("montant"),
-	                        rs.getTimestamp("daterecep").toLocalDateTime()
+	                        rs.getTimestamp("daterecep").toLocalDateTime(),
+	                        rs.getString("nom")
 	                );
 	                list.add(e);
 	            }
@@ -76,6 +104,31 @@ public class RetraitDAO {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public List<Retrait> searchRetrait(LocalDateTime date) {
+		List<Retrait> list = new ArrayList<>();
+		
+		try (Connection conn = DBConnection.getConnection();
+			PreparedStatement ps = conn.prepareStatement(SELECT_RETRAIT_BY_DATE_QUERY))
+		{
+			ps.setTimestamp(1, Timestamp.valueOf(date));
+	        ResultSet rs = ps.executeQuery();
+			
+	        while (rs.next()) {
+            	Retrait e = new Retrait(
+                        rs.getString("idrecep"),
+                        rs.getString("numtel"),
+                        rs.getInt("montant"),
+                        rs.getTimestamp("daterecep").toLocalDateTime(),
+                        rs.getString("nom")
+                );
+                list.add(e);
+            }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 	
 	public void delete(String idrecep) {

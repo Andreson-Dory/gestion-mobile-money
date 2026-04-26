@@ -73,7 +73,6 @@ public class ClientServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		String action = request.getPathInfo();
 
 		if (action == null || action.equals("/")) {
@@ -108,7 +107,7 @@ public class ClientServlet extends HttpServlet {
 		    return;
 		}
 		
-		Client newClient = new Client(numtel, nom, sexe, age, 0, mail);
+		Client newClient = new Client(numtel, nom, sexe, age, mail);
 		clientService.createClient(newClient);
 		response.sendRedirect(request.getContextPath() + "/client");
 	}
@@ -133,6 +132,7 @@ public class ClientServlet extends HttpServlet {
 		String nom = request.getParameter("nom");
 		String sexe = request.getParameter("sexe");
 		String a = request.getParameter("age");
+		String s = request.getParameter("solde");
 		String mail = request.getParameter("mail");
 		
 		if (isInvalid(numtel, nom, sexe, a, mail)) {
@@ -141,14 +141,16 @@ public class ClientServlet extends HttpServlet {
 		}
 
 		int age;
+		int solde;
 		try {
 			age = Integer.parseInt(a);
+			solde = Integer.parseInt(s);
 		} catch (NumberFormatException e) {
 			response.sendRedirect(request.getContextPath() + "/client/new");
 			return;
 		}
 		
-		Client updatedClient = new Client(numtel, nom, sexe, age, 0, mail);
+		Client updatedClient = new Client(numtel, nom, sexe, age, solde, mail);
 		clientService.updateClient(updatedClient);
 		response.sendRedirect(request.getContextPath() + "/client");
 	}
