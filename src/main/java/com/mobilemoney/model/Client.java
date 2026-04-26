@@ -19,6 +19,15 @@ public class Client {
 		this.mail = mail;
 	}
 		
+	public Client(String numtel, String nom, String sexe, int age, String mail) {
+		super();
+		this.numtel = numtel;
+		this.nom = nom;
+		this.sexe = sexe;
+		this.age = age;
+		this.mail = mail;
+	}
+
 	public String getNumtel() {
 		return numtel;
 	}

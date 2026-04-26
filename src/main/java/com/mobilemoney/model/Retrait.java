@@ -8,6 +8,7 @@ public class Retrait {
 	private String numtel;
 	private int montant;
 	private LocalDateTime daterecep;
+	private String nom;
 		
 	public Retrait(String idrecep, String numtel, int montant, LocalDateTime daterecep) {
 		super();
@@ -15,6 +16,21 @@ public class Retrait {
 		this.numtel = numtel;
 		this.montant = montant;
 		this.daterecep = daterecep;
+	}
+
+	public Retrait(String idrecep, String numtel, int montant, LocalDateTime daterecep, String nom) {
+		super();
+		this.idrecep = idrecep;
+		this.numtel = numtel;
+		this.montant = montant;
+		this.daterecep = daterecep;
+		this.nom = nom;
+	}
+
+	public Retrait(String numtel, int montant) {
+		super();
+		this.numtel = numtel;
+		this.montant = montant;
 	}
 
 	public String getIdrecep() {
@@ -47,6 +63,14 @@ public class Retrait {
 
 	public void setDaterecep(LocalDateTime daterecep) {
 		this.daterecep = daterecep;
+	}
+	
+	public String getNom() {
+		return nom;
+	}
+
+	public void setNom(String nom) {
+		this.nom = nom;
 	}
 	
 }
