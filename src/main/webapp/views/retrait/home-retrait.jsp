@@ -125,7 +125,7 @@
 		        <div class="modal-content mx-1">
 		            <!-- Header -->
 		            <div class="modal-header">
-		                <h5 class="modal-title fw-bold" id="addClientModalLabel">
+		                <h5 class="modal-title fw-bold" id="doRetraitModalLabel">
 		                    Effectuer un retrait d'argent
 		                </h5>
 		                <button type="button"
@@ -193,7 +193,7 @@
 			        dropdownParent: $('#doRetraitModal')
 			    });
 			});
-			</script>
+		</script>
 		</div>
 		
 	</div>

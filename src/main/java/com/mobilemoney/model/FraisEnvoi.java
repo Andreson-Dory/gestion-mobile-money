@@ -2,24 +2,31 @@ package com.mobilemoney.model;
 
 public class FraisEnvoi {
 
-	private String idEnv;
+	private int idEnv;
 	private int montant1;
 	private int montant2; 
 	private int fraisEnv;
 	
-	public FraisEnvoi(String idEnv, int montant1, int montant2, int fraisEnv) {
+	public FraisEnvoi(int idEnv, int montant1, int montant2, int fraisEnv) {
 		super();
 		this.idEnv = idEnv;
 		this.montant1 = montant1;
 		this.montant2 = montant2;
 		this.fraisEnv = fraisEnv;
 	}
+	
+	public FraisEnvoi(int montant1, int montant2, int fraisEnv) {
+		super();
+		this.montant1 = montant1;
+		this.montant2 = montant2;
+		this.fraisEnv = fraisEnv;
+	}
 
-	public String getIdEnv() {
+	public int getIdEnv() {
 		return idEnv;
 	}
 
-	public void setIdEnv(String idEnv) {
+	public void setIdEnv(int idEnv) {
 		this.idEnv = idEnv;
 	}
 

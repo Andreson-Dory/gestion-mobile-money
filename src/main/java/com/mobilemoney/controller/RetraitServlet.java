@@ -55,7 +55,7 @@ public class RetraitServlet extends HttpServlet {
 		
 		switch (action) {
 			default:
-				response.sendRedirect(request.getContextPath() + "/retrait");
+				listRetraits(request, response);
 				break;
 		}
 	}
