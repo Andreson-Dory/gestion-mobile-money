@@ -8,8 +8,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.mobilemoney.model.Client;
 import com.mobilemoney.service.ClientService;
+import com.mobilemoney.service.FraisEnvoiService;
+import com.mobilemoney.service.FraisRecepService;
 
 /**
  * Servlet implementation class ClientServlet
@@ -18,12 +26,16 @@ import com.mobilemoney.service.ClientService;
 public class ClientServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private ClientService clientService;
+    private FraisRecepService fraisRecepService;
+    private FraisEnvoiService fraisEnvoiService;
     
     /**
      * @see HttpServlet#HttpServlet()
      */
     public ClientServlet() {
     	this.clientService = new ClientService();
+    	this.fraisEnvoiService = new FraisEnvoiService();
+    	this.fraisRecepService = new FraisRecepService();
     }
     
     private boolean isInvalid(String... fields) {
@@ -153,6 +165,110 @@ public class ClientServlet extends HttpServlet {
 		Client updatedClient = new Client(numtel, nom, sexe, age, solde, mail);
 		clientService.updateClient(updatedClient);
 		response.sendRedirect(request.getContextPath() + "/client");
+	}
+	
+	private void generatePDF(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("application/pdf");
+
+        response.setHeader(
+                "Content-Disposition",
+                "attachment; filename=releve-client.pdf"
+        );
+
+        try {
+
+            Document document = new Document();
+
+            PdfWriter.getInstance(
+                    document,
+                    response.getOutputStream()
+            );
+
+            document.open();
+
+            // ===== TITRE =====
+
+            Paragraph titre = new Paragraph(
+                    "Date : Avril 2024",
+                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)
+            );
+
+            titre.setAlignment(Element.ALIGN_CENTER);
+
+            document.add(titre);
+
+            document.add(new Paragraph(" "));
+
+            // ===== INFOS CLIENT =====
+
+            document.add(new Paragraph("Contact : 0324432167"));
+            document.add(new Paragraph("RAKOTO Bernard"));
+            document.add(new Paragraph("40 ans"));
+            document.add(new Paragraph("Masculin"));
+
+            document.add(new Paragraph(" "));
+
+            document.add(new Paragraph(
+                    "Solde actuel : 340.000 Ariary"
+            ));
+
+            document.add(new Paragraph(" "));
+
+            // ===== TABLEAU =====
+
+            PdfPTable table = new PdfPTable(4);
+
+            table.setWidthPercentage(100);
+
+            table.addCell("Date");
+            table.addCell("Raison");
+            table.addCell("Débit");
+            table.addCell("Crédit");
+
+            // ===== DONNEES =====
+
+            table.addCell("01/04/2024");
+            table.addCell("Jirama");
+            table.addCell("50.000");
+            table.addCell("");
+
+            table.addCell("15/04/2024");
+            table.addCell("Trosa Hery");
+            table.addCell("");
+            table.addCell("125.000");
+
+            table.addCell("26/04/2024");
+            table.addCell("Merci");
+            table.addCell("15.000");
+            table.addCell("");
+
+            document.add(table);
+
+            document.add(new Paragraph(" "));
+
+            // ===== TOTAUX =====
+
+            document.add(new Paragraph(
+                    "Total Débit : 65.000 Ar"
+            ));
+
+            document.add(new Paragraph(" "));
+
+            document.add(new Paragraph(
+                    "Total Crédit : 125.000 Ar"
+            ));
+
+            document.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+	
+	private void handleGeneratePDF(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String numtel = request.getParameter("numtel");
+		
+		
 	}
 	
 	private void deleteClient(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

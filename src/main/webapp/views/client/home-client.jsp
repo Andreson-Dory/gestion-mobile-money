@@ -94,6 +94,10 @@
 	            <td>${client.age}</td>
 	            <td class="text-success">${client.solde}</td>
 	            <td style="white-space: nowrap;">
+	            	<a href="${pageContext.request.contextPath}/client"
+					   class="btn btn-primary">
+					    Générer PDF
+					</a>
 				    <a href="#"
 					   class="btn btn-sm btn-outline-secondary"
 					   data-bs-toggle="modal"
