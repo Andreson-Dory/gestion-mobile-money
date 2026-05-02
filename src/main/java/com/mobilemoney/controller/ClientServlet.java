@@ -82,7 +82,7 @@ public class ClientServlet extends HttpServlet {
 		
 		switch (action) {
 			default:
-				response.sendRedirect(request.getContextPath() + "/client");
+				listClients(request, response);
 				break;
 		}
 	}

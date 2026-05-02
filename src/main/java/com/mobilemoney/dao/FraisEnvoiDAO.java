@@ -13,7 +13,7 @@ import com.mobilemoney.model.FraisEnvoi;
 
 public class FraisEnvoiDAO {
 
-	private static final String INSERT_FRAISENVOI_QUERY = "INSERT INTO FRAIS_ENV (idEnv, montant1, montant2, frais_env) VALUES (?, ?, ?, ?);";
+	private static final String INSERT_FRAISENVOI_QUERY = "INSERT INTO FRAIS_ENVOI (montant1, montant2, frais_env) VALUES (?, ?, ?);";
 	private static final String SELECT_ALL_FRAISENVOI_QUERY = "SELECT * FROM FRAIS_ENVOI;";
 	private static final String SELECT_FRAISENV_BY_IDENV_QUERY = "SELECT * FROM FRAIS_ENVOI WHERE idEnv= ?;";
 	private static final String UPDATE_FRAISENV_QUERY = "UPDATE FRAIS_ENVOI SET montant1= ?, montant2= ?, frais_env= ? WHERE idEnv= ?;";
@@ -24,10 +24,9 @@ public class FraisEnvoiDAO {
 		try(Connection conn = DBConnection.getConnection();
 				PreparedStatement ps = conn.prepareStatement(INSERT_FRAISENVOI_QUERY))
 			{	
-				ps.setString(1, fe.getIdEnv());
-				ps.setInt(2, fe.getMontant1());
-				ps.setInt(3, fe.getMontant2());
-				ps.setInt(4, fe.getFraisEnv());
+				ps.setInt(1, fe.getMontant1());
+				ps.setInt(2, fe.getMontant2());
+				ps.setInt(3, fe.getFraisEnv());
 				
 				ps.executeUpdate();			
 			} catch (SQLException e) {
@@ -44,7 +43,7 @@ public class FraisEnvoiDAO {
 
 	            while (rs.next()) {
 	            	FraisEnvoi fe = new FraisEnvoi(
-	                        rs.getString("idEnv"),
+	                        rs.getInt("idEnv"),
 	                        rs.getInt("montant1"),
 	                        rs.getInt("montant2"),
 	                        rs.getInt("frais_env")
@@ -69,7 +68,7 @@ public class FraisEnvoiDAO {
 
 				if (rs.next()) {
 					return new FraisEnvoi(
-							rs.getString("idEnv"),
+							rs.getInt("idEnv"),
 	                        rs.getInt("montant1"),
 	                        rs.getInt("montant2"),
 	                        rs.getInt("frais_env")
@@ -81,12 +80,12 @@ public class FraisEnvoiDAO {
 			return null;
 	}
 	
-	public void delete(String idEnv) {
+	public void delete(int idEnv) {
 		
 		try (Connection conn = DBConnection.getConnection();
 	             PreparedStatement ps = conn.prepareStatement(DELETE_FRAISENV_QUERY)) {
 
-	            ps.setString(1, idEnv);
+	            ps.setInt(1, idEnv);
 	            ps.executeUpdate();
 
 	        } catch (SQLException ex) {
@@ -102,7 +101,7 @@ public class FraisEnvoiDAO {
 				ps.setInt(1, fe.getMontant1());
 				ps.setInt(2, fe.getMontant2());
 				ps.setInt(3, fe.getFraisEnv());
-				ps.setString(4, fe.getIdEnv());
+				ps.setInt(4, fe.getIdEnv());
 				
 				ps.executeUpdate();
 			
