@@ -94,6 +94,20 @@
 	            <td>${client.age}</td>
 	            <td class="text-success">${client.solde}</td>
 	            <td style="white-space: nowrap;">
+					<form action="${pageContext.request.contextPath}/client/pdf"
+				      method="post"
+				      style="display:inline;"
+				      >
+					    <input type="hidden"
+					           name="numtel"
+					           value="${client.numtel}">
+					
+					    <button type="submit"
+					            class="btn btn-primary"
+					    >
+					        Générer PDF
+					    </button>
+					</form>
 				    <a href="#"
 					   class="btn btn-sm btn-outline-secondary"
 					   data-bs-toggle="modal"

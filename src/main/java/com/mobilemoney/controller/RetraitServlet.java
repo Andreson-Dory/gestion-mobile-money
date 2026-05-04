@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
@@ -104,8 +105,16 @@ public class RetraitServlet extends HttpServlet {
 			    return;
 			}
 	        retraits = retraitService.searchRetrait(daterecep);
+	        retraits.forEach(retrait -> {
+	        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	        	retrait.setDate(retrait.getDaterecep().format(formatter));
+	        });
 	    } else {
 	        retraits = retraitService.getAllRetrait();
+	        retraits.forEach(retrait -> {
+	        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	        	retrait.setDate(retrait.getDaterecep().format(formatter));
+	        });
 	    }
 		clients = clientService.getAllClients();
 		

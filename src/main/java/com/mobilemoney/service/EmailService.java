@@ -8,8 +8,11 @@ import jakarta.mail.internet.MimeMessage;
 
 public class EmailService {
 
-    private final String username = "narindrarasoavololona@gmail.com";
-    private final String password = "adminN";
+    // private final String username = "narindrarasoavololona@gmail.com";
+    // private final String password = "adminN";
+	private final String username = "sedraniainadory@gmail.com";
+    private final String password = "tkpi qefr kqln qphx";
+   
 
     public void sendEmail(String toEmail, String subject, String messageText) {
 
