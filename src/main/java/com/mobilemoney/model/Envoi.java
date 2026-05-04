@@ -4,37 +4,32 @@ import java.time.LocalDateTime;
 
 public class Envoi {
 
-    private String idEnv;
+    private int idEnv;
     private String numEnvoyeur;
     private String numRecepteur;
     private int montant;
     private LocalDateTime date;
     private boolean payerFraisRetrait;
     private String raison;
+    private String dateEnvoi;
 
-    private double fraisEnvoi;
-
-
-    public Envoi(String idEnv, String numEnvoyeur, String numRecepteur,
+	public Envoi(String numEnvoyeur, String numRecepteur,
                  int montant, LocalDateTime date,
-                 boolean payerFraisRetrait, String raison,
-                 double fraisEnvoi) {
+                 boolean payerFraisRetrait, String raison
+    		) {
 
-        this.idEnv = idEnv;
         this.numEnvoyeur = numEnvoyeur;
         this.numRecepteur = numRecepteur;
         this.montant = montant;
         this.date = date;
         this.payerFraisRetrait = payerFraisRetrait;
         this.raison = raison;
-        this.fraisEnvoi = fraisEnvoi;
     }
 
 
-    public Envoi(String idEnv, String numEnvoyeur, String numRecepteur,
+    public Envoi(int idEnv, String numEnvoyeur, String numRecepteur,
                  String montant, String date,
-                 String payerFraisRetrait, String raison,
-                 String fraisEnvoi) {
+                 String payerFraisRetrait, String raison) {
 
         this.idEnv = idEnv;
         this.numEnvoyeur = numEnvoyeur;
@@ -43,10 +38,9 @@ public class Envoi {
         this.date = LocalDateTime.parse(date);
         this.payerFraisRetrait = Boolean.parseBoolean(payerFraisRetrait);
         this.raison = raison;
-        this.fraisEnvoi = Double.parseDouble(fraisEnvoi);
     }
 
-    public Envoi(String idEnv, String numEnvoyeur, String numRecepteur,
+    public Envoi(int idEnv, String numEnvoyeur, String numRecepteur,
             int montant, LocalDateTime date,
             boolean payerFraisRetrait, String raison) {
 
@@ -59,15 +53,15 @@ public class Envoi {
 		   this.raison = raison;
 		}
 
-    public String getIdEnv() {
-        return idEnv;
-    }
+    public int getIdEnv() {
+		return idEnv;
+	}
 
-    public void setIdEnv(String idEnv) {
-        this.idEnv = idEnv;
-    }
+	public void setIdEnv(int idEnv) {
+		this.idEnv = idEnv;
+	}
 
-    public String getNumEnvoyeur() {
+	public String getNumEnvoyeur() {
         return numEnvoyeur;
     }
 
@@ -114,12 +108,13 @@ public class Envoi {
     public void setRaison(String raison) {
         this.raison = raison;
     }
+    
+    public String getDateEnvoi() {
+  		return dateEnvoi;
+  	}
 
-    public double getFraisEnvoi() {
-        return fraisEnvoi;
-    }
+  	public void setDateEnvoi(String dateEnvoi) {
+  		this.dateEnvoi = dateEnvoi;
+  	}
 
-    public void setFraisEnvoi(double fraisEnvoi) {
-        this.fraisEnvoi = fraisEnvoi;
-    }
 }

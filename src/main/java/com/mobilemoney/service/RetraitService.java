@@ -23,7 +23,6 @@ public class RetraitService {
 		
 		client = clientDAO.findByNumtel(numtel);
 		int solde = client.getSolde();
-		System.out.println("Solde actuel" + solde);
 			
 		fraisRecep = fraisRecepDAO.findByMontant(montant);
 		int frais = fraisRecep.getFraisRec();
@@ -34,9 +33,7 @@ public class RetraitService {
 		}
 		int newSolde = solde - totalMontantRetire;
 		retrait.setMontant(totalMontantRetire);
-		System.out.println("Nouveau solde" + newSolde);
 		client.setSolde(newSolde);
-		System.out.println("Nouveau solde du client après modfif" + client.getSolde());
 		clientDAO.update(client);
 		retraitDAO.insert(retrait);
 	}

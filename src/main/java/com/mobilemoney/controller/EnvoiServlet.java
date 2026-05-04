@@ -8,18 +8,23 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import com.mobilemoney.model.Client;
 import com.mobilemoney.model.Envoi;
+import com.mobilemoney.service.ClientService;
 import com.mobilemoney.service.EnvoiService;
 
 @WebServlet("/envoi/*")
 public class EnvoiServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private EnvoiService envoiService;
+    private ClientService clientService;
 
     public EnvoiServlet() {
         this.envoiService = new EnvoiService();
+        this.clientService = new ClientService();
     }
 
 
@@ -65,44 +70,36 @@ public class EnvoiServlet extends HttpServlet {
 
     private void insertEnvoi(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        String idEnvoi = request.getParameter("idEnv");
         String numEnvoyeur = request.getParameter("numEnvoyeur");
         String numRecepteur = request.getParameter("numRecepteur");
         String m = request.getParameter("montant");
-        String dateStr = request.getParameter("date");
         String payFraisRetraitStr = request.getParameter("payer_frais_retrait");
         String raison = request.getParameter("raison");
-        String fraisStr = request.getParameter("fraisEnvoi");
+        LocalDateTime date = LocalDateTime.now();
 
-        if (isInvalid(idEnvoi, numEnvoyeur, numRecepteur, m, dateStr, payFraisRetraitStr, raison, fraisStr)) {
+        if (isInvalid(numEnvoyeur, numRecepteur, m, payFraisRetraitStr, raison)) {
             response.sendRedirect(request.getContextPath() + "/envoi");
             return;
         }
 
         int montant;
-        double fraisEnvoi;
         boolean payFraisRetrait;
-        LocalDateTime date;
 
         try {
             montant = Integer.parseInt(m);
-            fraisEnvoi = Double.parseDouble(fraisStr);
             payFraisRetrait = Boolean.parseBoolean(payFraisRetraitStr);
-            date = LocalDateTime.parse(dateStr); // format ISO obligatoire
         } catch (Exception e) {
             response.sendRedirect(request.getContextPath() + "/envoi");
             return;
         }
 
         Envoi newEnvoi = new Envoi(
-                idEnvoi,
                 numEnvoyeur,
                 numRecepteur,
                 montant,
                 date,
                 payFraisRetrait,
-                raison,
-                fraisEnvoi
+                raison
         );
 
         envoiService.createEnvoi(newEnvoi);
@@ -129,15 +126,26 @@ public class EnvoiServlet extends HttpServlet {
 
         String date = request.getParameter("search");
         List<Envoi> envoi;
+        List<Client> clients;
 
         if (date != null && !date.trim().isEmpty()) {
             envoi = envoiService.searchEnvoi(date);
+            envoi.forEach(e-> {
+	        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	        	e.setDateEnvoi(e.getDate().format(formatter));
+	        });
         } else {
             envoi = envoiService.getAllEnvoi();
+            envoi.forEach(e-> {
+	        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	        	e.setDateEnvoi(e.getDate().format(formatter));
+	        });
         }
+        clients = clientService.getAllClients();
 
         request.setAttribute("search", date);
         request.setAttribute("envoi", envoi);
+        request.setAttribute("clients", clients);
 
         request.getRequestDispatcher("views/envoi/home-envoi.jsp")
                 .forward(request, response);

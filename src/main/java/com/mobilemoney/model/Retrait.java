@@ -9,7 +9,16 @@ public class Retrait {
 	private int montant;
 	private LocalDateTime daterecep;
 	private String nom;
+	private String date;
 		
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
 	public Retrait(String idrecep, String numtel, int montant, LocalDateTime daterecep) {
 		super();
 		this.idrecep = idrecep;

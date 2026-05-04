@@ -6,16 +6,22 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.mobilemoney.model.Client;
+import com.mobilemoney.model.Envoi;
 import com.mobilemoney.service.ClientService;
+import com.mobilemoney.service.EnvoiService;
 import com.mobilemoney.service.FraisEnvoiService;
 import com.mobilemoney.service.FraisRecepService;
 
@@ -26,16 +32,14 @@ import com.mobilemoney.service.FraisRecepService;
 public class ClientServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private ClientService clientService;
-    private FraisRecepService fraisRecepService;
-    private FraisEnvoiService fraisEnvoiService;
+    private EnvoiService envoiService;
     
     /**
      * @see HttpServlet#HttpServlet()
      */
     public ClientServlet() {
     	this.clientService = new ClientService();
-    	this.fraisEnvoiService = new FraisEnvoiService();
-    	this.fraisRecepService = new FraisRecepService();
+    	this.envoiService = new EnvoiService();
     }
     
     private boolean isInvalid(String... fields) {
@@ -71,6 +75,10 @@ public class ClientServlet extends HttpServlet {
 				case "/delete":
 						deleteClient(request, response);
 					break;
+					
+				case "/pdf":
+						handleGeneratePDF(request, response);
+						break;
 				default:
 		            response.sendRedirect(request.getContextPath() + "/client");
 		            break;
@@ -136,7 +144,7 @@ public class ClientServlet extends HttpServlet {
 
 		request.setAttribute("search", search);
 		request.setAttribute("clients", clients);
-		request.getRequestDispatcher("views/client/home-client.jsp").forward(request, response);
+		request.getRequestDispatcher("/views/client/home-client.jsp").forward(request, response);
 	}
 	
 	private void updateClient(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -167,14 +175,25 @@ public class ClientServlet extends HttpServlet {
 		response.sendRedirect(request.getContextPath() + "/client");
 	}
 	
-	private void generatePDF(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	private void generatePDF(HttpServletRequest request, HttpServletResponse response, Client client, List<Envoi> envois) throws ServletException, IOException {
 		response.setContentType("application/pdf");
 
         response.setHeader(
                 "Content-Disposition",
                 "attachment; filename=releve-client.pdf"
         );
-
+        
+        AtomicInteger credit = new AtomicInteger(0);
+        AtomicInteger debit = new AtomicInteger(0);
+        
+        envois.forEach(envoi -> {
+        	if(envoi.getNumEnvoyeur().equals(client.getNumtel())) {
+        		debit.addAndGet(envoi.getMontant());
+        	} else {
+        		credit.addAndGet(envoi.getMontant());
+        	}
+        });
+        
         try {
 
             Document document = new Document();
@@ -201,15 +220,15 @@ public class ClientServlet extends HttpServlet {
 
             // ===== INFOS CLIENT =====
 
-            document.add(new Paragraph("Contact : 0324432167"));
-            document.add(new Paragraph("RAKOTO Bernard"));
-            document.add(new Paragraph("40 ans"));
-            document.add(new Paragraph("Masculin"));
+            document.add(new Paragraph("Contact : " + client.getNumtel()));
+            document.add(new Paragraph(client.getNom()));
+            document.add(new Paragraph(client.getAge() + " ans"));
+            document.add(new Paragraph(client.getSexe()));
 
             document.add(new Paragraph(" "));
 
             document.add(new Paragraph(
-                    "Solde actuel : 340.000 Ariary"
+                    "Solde actuel : " + client.getSolde() +" Ariary"
             ));
 
             document.add(new Paragraph(" "));
@@ -217,30 +236,32 @@ public class ClientServlet extends HttpServlet {
             // ===== TABLEAU =====
 
             PdfPTable table = new PdfPTable(4);
-
+            
             table.setWidthPercentage(100);
 
-            table.addCell("Date");
-            table.addCell("Raison");
-            table.addCell("Débit");
-            table.addCell("Crédit");
+            table.addCell(cell("Date"));
+            table.addCell(cell("Raison"));
+            table.addCell(cell("Débit"));
+            table.addCell(cell("Crédit"));
 
             // ===== DONNEES =====
 
-            table.addCell("01/04/2024");
-            table.addCell("Jirama");
-            table.addCell("50.000");
-            table.addCell("");
-
-            table.addCell("15/04/2024");
-            table.addCell("Trosa Hery");
-            table.addCell("");
-            table.addCell("125.000");
-
-            table.addCell("26/04/2024");
-            table.addCell("Merci");
-            table.addCell("15.000");
-            table.addCell("");
+            envois.forEach(envoi -> {
+            	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            	if(envoi.getNumEnvoyeur().equals(client.getNumtel())) {
+            		table.addCell(cell(envoi.getDate().format(formatter)));
+                    table.addCell(cell(envoi.getRaison()));
+                    table.addCell(cell(String.valueOf(envoi.getMontant())));
+                    table.addCell("");
+                    
+            	}else {
+            		table.addCell(cell(envoi.getDate().format(formatter)));
+                    table.addCell(cell(envoi.getRaison()));
+                    table.addCell("");
+                    table.addCell(cell(String.valueOf(envoi.getMontant())));
+                    
+            	}
+            });
 
             document.add(table);
 
@@ -249,13 +270,13 @@ public class ClientServlet extends HttpServlet {
             // ===== TOTAUX =====
 
             document.add(new Paragraph(
-                    "Total Débit : 65.000 Ar"
+                    "Total Débit : " + debit.get() + " Ar"
             ));
 
             document.add(new Paragraph(" "));
 
             document.add(new Paragraph(
-                    "Total Crédit : 125.000 Ar"
+                    "Total Crédit : " + credit.get() + " Ar"
             ));
 
             document.close();
@@ -267,8 +288,11 @@ public class ClientServlet extends HttpServlet {
 	
 	private void handleGeneratePDF(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String numtel = request.getParameter("numtel");
+		Client client = clientService.getClientByNumtel(numtel);
+		List<Envoi> envois = envoiService.getClientMonthlyEnvoi(numtel);
 		
-		
+		generatePDF(request, response, client, envois);
+		response.sendRedirect(request.getContextPath() + "/client");
 	}
 	
 	private void deleteClient(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -281,6 +305,12 @@ public class ClientServlet extends HttpServlet {
 		
 		clientService.deleteClient(numtel);
 		response.sendRedirect(request.getContextPath() + "/client");
+	}
+	
+	private PdfPCell cell(String text) {
+	    PdfPCell cell = new PdfPCell(new Phrase(text));
+	    cell.setPaddingLeft(8f);
+	    return cell;
 	}
 
 }

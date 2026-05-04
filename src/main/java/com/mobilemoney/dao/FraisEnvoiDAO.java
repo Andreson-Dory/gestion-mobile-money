@@ -16,6 +16,7 @@ public class FraisEnvoiDAO {
 	private static final String INSERT_FRAISENVOI_QUERY = "INSERT INTO FRAIS_ENVOI (montant1, montant2, frais_env) VALUES (?, ?, ?);";
 	private static final String SELECT_ALL_FRAISENVOI_QUERY = "SELECT * FROM FRAIS_ENVOI;";
 	private static final String SELECT_FRAISENV_BY_IDENV_QUERY = "SELECT * FROM FRAIS_ENVOI WHERE idEnv= ?;";
+	private static final String SELECT_FRAISENV_BY_MONTANT_QUERY = "SELECT * FROM FRAIS_ENVOI WHERE ? BETWEEN montant1 AND montant2;";
 	private static final String UPDATE_FRAISENV_QUERY = "UPDATE FRAIS_ENVOI SET montant1= ?, montant2= ?, frais_env= ? WHERE idEnv= ?;";
 	private static final String DELETE_FRAISENV_QUERY = "DELETE FROM FRAIS_ENVOI WHERE idEnv= ?;";
 	
@@ -66,6 +67,27 @@ public class FraisEnvoiDAO {
 		        ResultSet rs = ps.executeQuery();
 				
 
+				if (rs.next()) {
+					return new FraisEnvoi(
+							rs.getInt("idEnv"),
+	                        rs.getInt("montant1"),
+	                        rs.getInt("montant2"),
+	                        rs.getInt("frais_env")
+					);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return null;
+	}
+	
+	public FraisEnvoi findByMontant(int montant) {
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(SELECT_FRAISENV_BY_MONTANT_QUERY))
+			{
+				ps.setInt(1, montant);
+		        ResultSet rs = ps.executeQuery();
+				
 				if (rs.next()) {
 					return new FraisEnvoi(
 							rs.getInt("idEnv"),

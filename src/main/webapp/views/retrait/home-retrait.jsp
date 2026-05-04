@@ -86,7 +86,7 @@
 					<tbody>
 						<c:forEach var="retrait" items="${retraits}">
 			        <tr>
-			            <td>${retrait.daterecep}</td>
+			            <td>${retrait.date}</td>
 			            <td>${retrait.nom}</td>
 			            <td>${retrait.numtel}</td>
 			            <td>${retrait.montant}</td>

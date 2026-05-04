@@ -9,8 +9,9 @@
 <meta charset="UTF-8">
 <title>Gestion des envois</title>
 
-<link rel="stylesheet" href="assets/bootstrap-5.3.8/css/bootstrap.min.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/bootstrap-5.3.8/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="${pageContext.request.contextPath}/assets/css/select2.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/global.css">
 
 </head>
@@ -46,7 +47,6 @@
         <form action="${pageContext.request.contextPath}/envoi"
               method="get"
               id="searchForm">
-
             <div class="my-3 mx-3 p-1 gap-2 d-flex bg-body-secondary align-items-center rounded-4">
                 <i class="bi bi-search mx-2" style="font-size: 20px"></i>
 
@@ -58,7 +58,6 @@
                        onkeyup="debounceSearch()">
             </div>
         </form>
-
         <script>
             let timer;
             function debounceSearch() {
@@ -71,32 +70,24 @@
 
         <!-- TABLE -->
         <div class="card border-0 shadow-sm rounded-4 p-4 mx-3">
-
             <table class="table align-middle mb-0">
-
                 <thead>
                 <tr class="border-bottom">
                     <th style="width: 20%">Date</th>
                     <th style="width: 15%">Client</th>
                     <th style="width: 15%">Bénéficiaire</th>
                     <th style="width: 15%">Montant</th>
-                    <th style="width: 15%">Frais</th>
                     <th style="width: 10%">Retrait</th>
                     <th style="width: 10%">Actions</th>
                 </tr>
                 </thead>
-
                 <tbody>
-
                 <c:forEach var="envoi" items="${envoi}">
                     <tr>
-
-                        <td>${envoi.date}</td>
+                        <td>${envoi.dateEnvoi}</td>
                         <td>${envoi.numEnvoyeur}</td>
                         <td>${envoi.numRecepteur}</td>
                         <td>${envoi.montant} Ar</td>
-                        <td class="text-success">${envoi.fraisEnvoi} Ar</td>
-
                         <td>
                             <c:choose>
                                 <c:when test="${envoi.payerFraisRetrait}">
@@ -107,7 +98,6 @@
                                 </c:otherwise>
                             </c:choose>
                         </td>
-
                         <td style="white-space: nowrap;">
                             <form action="${pageContext.request.contextPath}/envoi/delete"
                                   method="post"
@@ -122,36 +112,41 @@
                                 </button>
                             </form>
                         </td>
-
                     </tr>
                 </c:forEach>
-
                 </tbody>
-
             </table>
-
         </div>
 
         <!-- MODAL -->
-        <div class="modal fade" id="addEnvoiModal" tabindex="-1">
+        <div class="modal fade" 
+        	id="addEnvoiModal" 
+        	tabindex="-1" 
+        	aria-labelledby="AddEnvoiModalLabel"
+		    aria-hidden="true">
 
             <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 600px;">
-
                 <div class="modal-content">
 
                     <div class="modal-header">
-                        <h5 class="modal-title fw-bold">Ajouter un envoi</h5>
+                        <h5 class="modal-title fw-bold" id="AddEnvoiModalLabel">
+                        	Effectuer un Transfert d'argent
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
                     <form action="${pageContext.request.contextPath}/envoi/insert"
                           method="post">
-
                         <div class="modal-body">
-
                             <div>
                                 <label class="form-label">Client</label>
-                                <select name="numEnvoyeur" class="form-select" required>
+                                
+                                <select 
+                                	id="EnvoyeurSelect" 
+                                	name="numEnvoyeur" 
+                                	class="form-select" 
+                                	required
+                                >
                                     <option value="">Choisir</option>
                                     <c:forEach var="client" items="${clients}">
                                         <option value="${client.numtel}">
@@ -163,7 +158,12 @@
 
                             <div class="mt-4">
                                 <label class="form-label">Bénéficiaire</label>
-                                <select name="numRecepteur" class="form-select" required>
+                                
+                                <select 
+                                	id="RecepteurSelect" 
+                                	name="numRecepteur" 
+                                	class="form-select" 
+                                	required>
                                     <option value="">Choisir</option>
                                     <c:forEach var="client" items="${clients}">
                                         <option value="${client.numtel}">
@@ -176,11 +176,6 @@
                             <div class="mt-4">
                                 <label class="form-label">Montant</label>
                                 <input type="number" name="montant" class="form-control" required>
-                            </div>
-
-                            <div class="mt-4">
-                                <label class="form-label">Date</label>
-                                <input type="datetime-local" name="date" class="form-control" required>
                             </div>
 
                             <div class="mt-4">
@@ -207,20 +202,32 @@
                                 Enregistrer
                             </button>
                         </div>
-
                     </form>
-
                 </div>
-
             </div>
-
         </div>
-
+        <script src="${pageContext.request.contextPath}/assets/bootstrap-5.3.8/js/bootstrap.bundle.min.js"></script>
+		<script src="${pageContext.request.contextPath}/assets/js/jquery-4.0.0.min.js"></script>
+		<script src="${pageContext.request.contextPath}/assets/js/select2.min.js"></script>
+		<script>
+			$(document).ready(function () {
+				$('#EnvoyeurSelect').select2({
+			     	 placeholder: "Rechercher un client...",
+			    	 allowClear: true,
+			     	 width: '100%',
+		        	 dropdownParent: $('#addEnvoiModal')
+		    	});
+			});
+			$(document).ready(function () {
+				$('#RecepteurSelect').select2({
+			     	 placeholder: "Rechercher un client...",
+			    	 allowClear: true,
+			     	 width: '100%',
+		        	 dropdownParent: $('#addEnvoiModal')
+		    	});
+			});
+		</script>
     </div>
 </div>
-
-<!-- 🔥 IMPORTANT (manquant chez toi) -->
-<script src="assets/bootstrap-5.3.8/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
