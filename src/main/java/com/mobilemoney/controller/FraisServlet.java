@@ -105,7 +105,6 @@ public class FraisServlet extends HttpServlet {
 	        request.setAttribute("frais", fraisEnvois);
 	    } else {
 	    	fraisReceps = fraisRecepService.getAllFraisRecep();
-	    	System.out.println("I'm in get recep, all frais => " + fraisReceps);
 	    	request.setAttribute("frais", fraisReceps);
 	    }
 		

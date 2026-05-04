@@ -14,22 +14,18 @@ import com.mobilemoney.model.Envoi;
 public class EnvoiDAO {
 
     private static final String INSERT_ENVOI_QUERY =
-        "INSERT INTO ENVOI (idEnv, numEnvoyeur, numRecepteur, montant, date, payer_frais_retrait, raison) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        "INSERT INTO ENVOI (numEnvoyeur, numRecepteur, montant, date, payer_frais_retrait, raison) " +
+        "VALUES (?, ?, ?, ?, ?, ?)";
 
     private static final String SELECT_ALL_ENVOI_QUERY =
-        "SELECT e.*, f.frais_env " +
-        "FROM ENVOI e " +
-        "LEFT JOIN FRAIS_ENVOI f " +
-        "ON e.montant BETWEEN f.montant1 AND f.montant2";
+        "SELECT * FROM ENVOI";
 
     private static final String SEARCH_ENVOI_BY_DATE =
-        "SELECT e.*, f.frais_env " +
-        "FROM ENVOI e " +
-        "LEFT JOIN FRAIS_ENVOI f " +
-        "ON e.montant BETWEEN f.montant1 AND f.montant2 " +
-        "WHERE DATE(e.date) = ?";
+        "SELECT * FROM ENVOI WHERE DATE(e.date) = ?";
 
+    private static final String SELECT_CLIENT_MONTHLY_ENVOI_QUERY = 
+    		"SELECT * FROM ENVOI WHERE (numEnvoyeur = ? OR numRecepteur = ?) AND MONTH(date) = MONTH(CURRENT_DATE()) AND YEAR(date) = YEAR(CURRENT_DATE())";
+    
     private static final String DELETE_ENVOI_QUERY =
         "DELETE FROM ENVOI WHERE idEnv = ?";
 
@@ -38,13 +34,12 @@ public class EnvoiDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(INSERT_ENVOI_QUERY)) {
 
-            ps.setString(1, env.getIdEnv());
-            ps.setString(2, env.getNumEnvoyeur());
-            ps.setString(3, env.getNumRecepteur());
-            ps.setInt(4, env.getMontant());
-            ps.setTimestamp(5, Timestamp.valueOf(env.getDate()));
-            ps.setBoolean(6, env.isPayerFraisRetrait());
-            ps.setString(7, env.getRaison());
+            ps.setString(1, env.getNumEnvoyeur());
+            ps.setString(2, env.getNumRecepteur());
+            ps.setInt(3, env.getMontant());
+            ps.setTimestamp(4, Timestamp.valueOf(env.getDate()));
+            ps.setBoolean(5, env.isPayerFraisRetrait());
+            ps.setString(6, env.getRaison());
 
             ps.executeUpdate();
 
@@ -62,7 +57,7 @@ public class EnvoiDAO {
 
             while (rs.next()) {
                 Envoi ev = new Envoi(
-                        rs.getString("idEnv"),
+                        rs.getInt("idEnv"),
                         rs.getString("numEnvoyeur"),
                         rs.getString("numRecepteur"),
                         rs.getInt("montant"),
@@ -70,8 +65,6 @@ public class EnvoiDAO {
                         rs.getBoolean("payer_frais_retrait"),
                         rs.getString("raison")
                 );
-
-                ev.setFraisEnvoi(rs.getInt("frais_env"));
 
                 list.add(ev);
             }
@@ -96,7 +89,7 @@ public class EnvoiDAO {
 
             while (rs.next()) {
                 Envoi ev = new Envoi(
-                        rs.getString("idEnv"),
+                        rs.getInt("idEnv"),
                         rs.getString("numEnvoyeur"),
                         rs.getString("numRecepteur"),
                         rs.getInt("montant"),
@@ -104,8 +97,6 @@ public class EnvoiDAO {
                         rs.getBoolean("payer_frais_retrait"),
                         rs.getString("raison")
                 );
-
-                ev.setFraisEnvoi(rs.getInt("frais_env"));
 
                 list.add(ev);
             }
@@ -117,6 +108,37 @@ public class EnvoiDAO {
         return list;
     }
 
+    public List<Envoi> findClientMonthlyEnvoi(String numtel) {
+        List<Envoi> list = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(SELECT_CLIENT_MONTHLY_ENVOI_QUERY)) {
+
+            ps.setString(1, numtel);
+            ps.setString(2, numtel);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Envoi ev = new Envoi(
+                        rs.getInt("idEnv"),
+                        rs.getString("numEnvoyeur"),
+                        rs.getString("numRecepteur"),
+                        rs.getInt("montant"),
+                        rs.getTimestamp("date").toLocalDateTime(),
+                        rs.getBoolean("payer_frais_retrait"),
+                        rs.getString("raison")
+                );
+
+                list.add(ev);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
 
     public void deleteEnvoi(String idEnv) {
         try (Connection conn = DBConnection.getConnection();
@@ -130,26 +152,4 @@ public class EnvoiDAO {
         }
     }
     
-    public String getEmailByNumero(String numero) {
-
-        String email = null;
-
-        String sql = "SELECT email FROM client WHERE numero = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, numero);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                email = rs.getString("email");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return email;
-    }
 }
