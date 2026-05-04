@@ -219,7 +219,6 @@
     </div>
 </div>
 
-<!-- 🔥 IMPORTANT (manquant chez toi) -->
 <script src="assets/bootstrap-5.3.8/js/bootstrap.bundle.min.js"></script>
 
 </body>
