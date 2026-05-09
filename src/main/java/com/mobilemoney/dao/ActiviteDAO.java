@@ -16,14 +16,18 @@ public class ActiviteDAO {
         List<Activite> list = new ArrayList<>();
 
         String sql = 
-            "SELECT 'ENVOI' AS type, c.nom AS client, e.montant, e.date AS dateOp"
-            + "FROM ENVOI e"
-            + "JOIN CLIENT c ON e.numRecepteur = c.numtel"
-            + "UNION ALL"
-            + "SELECT 'RETRAIT' AS type, c.nom AS client, r.montant, r.daterecep"
-            + "FROM RETRAIT r"
-            + "JOIN CLIENT c ON r.numtel = c.numtel"
-            + "ORDER BY dateOp DESC LIMIT 5";
+                "SELECT 'ENVOI' AS type, c.nom AS client, e.montant, e.date AS dateOp " +
+                "FROM ENVOI e " +
+                "JOIN CLIENT c ON e.numRecepteur = c.numtel " +
+                
+                "UNION ALL " +
+                
+                "SELECT 'RETRAIT' AS type, c.nom AS client, r.montant, r.daterecep AS dateOp " +
+                "FROM RETRAIT r " +
+                "JOIN CLIENT c ON r.numtel = c.numtel " +
+                
+                "ORDER BY dateOp DESC " +
+                "LIMIT 8";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);

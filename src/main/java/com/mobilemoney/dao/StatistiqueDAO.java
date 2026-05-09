@@ -12,7 +12,7 @@ public class StatistiqueDAO {
 		public int getRecetteFraisEnvoi() {
 			int total = 0;
 			
-			String sql="SELECT SUM(fe.FraisEnvoi) AS total " +
+			String sql="SELECT SUM(fe.frais_env) AS total " +
 	                "FROM ENVOI ev, FRAIS_ENVOI fe " +
 	                "WHERE ev.montant BETWEEN fe.montant1 AND fe.montant2";
 			
@@ -54,7 +54,7 @@ public class StatistiqueDAO {
 		public int getRecetteFraisRetrait() {
 			int total = 0;
 
-	        String sql = "SELECT SUM(fr.FraisRecep) AS total " +
+	        String sql = "SELECT SUM(fr.frais_rec) AS total " +
 	                     "FROM RETRAIT r, FRAIS_RECEP fr " +
 	                     "WHERE r.montant BETWEEN fr.montant1 AND fr.montant2";
 

@@ -60,11 +60,12 @@ public class EnvoiServlet extends HttpServlet {
         String idEnv = request.getParameter("idEnv");
 
         if (isInvalid(idEnv)) {
+        	request.getSession().setAttribute("error", "Transfert non défini !");
             response.sendRedirect(request.getContextPath() + "/envoi");
             return;
         }
 
-        envoiService.deleteEnvoi(idEnv);
+        envoiService.deleteEnvoi(request, response, idEnv);
         response.sendRedirect(request.getContextPath() + "/envoi");
     }
 
@@ -78,6 +79,7 @@ public class EnvoiServlet extends HttpServlet {
         LocalDateTime date = LocalDateTime.now();
 
         if (isInvalid(numEnvoyeur, numRecepteur, m, payFraisRetraitStr, raison)) {
+        	request.getSession().setAttribute("error", "Veuillez completer tous les champs ! ");
             response.sendRedirect(request.getContextPath() + "/envoi");
             return;
         }
@@ -102,8 +104,7 @@ public class EnvoiServlet extends HttpServlet {
                 raison
         );
 
-        envoiService.createEnvoi(newEnvoi);
-
+        envoiService.createEnvoi(request, response, newEnvoi);
         response.sendRedirect(request.getContextPath() + "/envoi");
     }
 

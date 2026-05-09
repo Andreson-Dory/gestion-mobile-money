@@ -13,6 +13,9 @@ import java.util.List;
 import com.mobilemonay.util.DBConnection;
 import com.mobilemoney.model.Retrait;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 public class RetraitDAO {
 	
 	private static final String INSERT_RETRAIT_QUERY = "INSERT INTO RETRAIT (numtel, montant) VALUES (?, ?);";
@@ -48,15 +51,17 @@ public class RetraitDAO {
 			+ "	WHERE r.status = 'VALIDE' AND DATE(r.daterecep) = ?;";
 	private static final String DELETE_RETRAIT_QUERY = "UPDATE RETRAIT set status = 'ANNULE' WHERE idrecep= ?;";
 	
-	public void insert (Retrait r) {
+	public void insert (HttpServletRequest request, HttpServletResponse response, Retrait r) {
 		try(Connection conn = DBConnection.getConnection();
 			PreparedStatement ps = conn.prepareStatement(INSERT_RETRAIT_QUERY))
 		{
 			ps.setString(1, r.getNumtel());
 			ps.setInt(2, r.getMontant());
 			
-			ps.executeUpdate();			
+			ps.executeUpdate();		
+	        request.getSession().setAttribute("success", "Retrait effectué avec succès !");
 		} catch (SQLException e) {
+	        request.getSession().setAttribute("error", "Erreur lors du retrait !");
 			e.printStackTrace();
 		};
 	}
@@ -131,15 +136,16 @@ public class RetraitDAO {
 		return list;
 	}
 	
-	public void delete(String idrecep) {
+	public void delete(HttpServletRequest request, HttpServletResponse response, String idrecep) {
 		
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(DELETE_RETRAIT_QUERY)) {
 
             ps.setString(1, idrecep);
             ps.executeUpdate();
-
+            request.getSession().setAttribute("success", "Retrait supprimé avec succès !");
         } catch (SQLException ex) {
+	        request.getSession().setAttribute("error", "Erreur lors de la suppression du retrait !");
             ex.printStackTrace();
         }
 	}

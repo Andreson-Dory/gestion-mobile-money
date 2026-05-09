@@ -11,6 +11,9 @@ import java.util.List;
 import com.mobilemonay.util.DBConnection;
 import com.mobilemoney.model.FraisRecep;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 public class FraisRecepDAO {
 
 	private static final String INSERT_FRAISRECEP_QUERY = "INSERT INTO FRAIS_RECEP (montant1, montant2, frais_rec) VALUES (?, ?, ?);";
@@ -19,7 +22,7 @@ public class FraisRecepDAO {
 	private static final String UPDATE_FRAISRECEP_QUERY = "UPDATE FRAIS_RECEP SET montant1= ?, montant2= ?, frais_rec= ? WHERE idRec= ?;";
 	private static final String DELETE_FRAISRECEP_QUERY = "DELETE FROM FRAIS_RECEP WHERE idRec= ?;";
 	
-	public void insert(FraisRecep fr) {
+	public void insert(HttpServletRequest request, HttpServletResponse response, FraisRecep fr) {
 		
 		try(Connection conn = DBConnection.getConnection();
 				PreparedStatement ps = conn.prepareStatement(INSERT_FRAISRECEP_QUERY))
@@ -28,8 +31,10 @@ public class FraisRecepDAO {
 				ps.setInt(2, fr.getMontant2());
 				ps.setInt(3, fr.getFraisRec());
 				
-				ps.executeUpdate();			
+				ps.executeUpdate();		
+		        request.getSession().setAttribute("success", "Frais réception ajouté avec succès !");
 			} catch (SQLException e) {
+		        request.getSession().setAttribute("error", "Erreur lors de l'ajout du frais de réception !");
 				e.printStackTrace();
 			};
 	}
@@ -78,20 +83,21 @@ public class FraisRecepDAO {
 			return null;
 	}
 	
-	public void delete(int idRec) {
+	public void delete(HttpServletRequest request, HttpServletResponse response, int idRec) {
 		
 		try (Connection conn = DBConnection.getConnection();
 	             PreparedStatement ps = conn.prepareStatement(DELETE_FRAISRECEP_QUERY)) {
 
 	            ps.setInt(1, idRec);
 	            ps.executeUpdate();
-
+	            request.getSession().setAttribute("success", "Frais réception mis à jour avec succès !");
 	        } catch (SQLException ex) {
+		        request.getSession().setAttribute("error", "Erreur lors de la mis à jour du frais de réception !");
 	            ex.printStackTrace();
 	        }
 	}
 	
-	public void update(FraisRecep fr) {
+	public void update(HttpServletRequest request, HttpServletResponse response, FraisRecep fr) {
 		
 		try (Connection conn = DBConnection.getConnection();
 				PreparedStatement ps = conn.prepareStatement(UPDATE_FRAISRECEP_QUERY)) 
@@ -102,8 +108,9 @@ public class FraisRecepDAO {
 				ps.setInt(4, fr.getIdRec());
 				
 				ps.executeUpdate();
-			
+		        request.getSession().setAttribute("success", "Frais réception supprimé avec succès !");
 			} catch (SQLException ex) {
+		        request.getSession().setAttribute("error", "Erreur lors de la suppression du frais réception !");
 				ex.printStackTrace();
 			}
 	}

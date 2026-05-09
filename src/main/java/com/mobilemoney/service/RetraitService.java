@@ -10,12 +10,15 @@ import com.mobilemoney.model.Client;
 import com.mobilemoney.model.FraisRecep;
 import com.mobilemoney.model.Retrait;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 public class RetraitService {
 	private ClientDAO clientDAO = new ClientDAO();
 	private RetraitDAO retraitDAO = new RetraitDAO();
 	private FraisRecepDAO fraisRecepDAO = new FraisRecepDAO(); 
 	
-	public void doRetrait(Retrait retrait) {
+	public void doRetrait(HttpServletRequest request, HttpServletResponse response, Retrait retrait) {
 		String numtel = retrait.getNumtel();
 		int montant = retrait.getMontant();
 		Client client;
@@ -34,8 +37,8 @@ public class RetraitService {
 		int newSolde = solde - totalMontantRetire;
 		retrait.setMontant(totalMontantRetire);
 		client.setSolde(newSolde);
-		clientDAO.update(client);
-		retraitDAO.insert(retrait);
+		clientDAO.update(request, response, client);
+		retraitDAO.insert(request, response, retrait);
 	}
 	
 	public List<Retrait> getAllRetrait(){
@@ -46,7 +49,7 @@ public class RetraitService {
 		return retraitDAO.searchRetrait(value);
 	}
 	
-	public void deleteRetrait(String idRecep) {
-		retraitDAO.delete(idRecep);
+	public void deleteRetrait(HttpServletRequest request, HttpServletResponse response, String idRecep) {
+		retraitDAO.delete(request, response, idRecep);
 	}
 }

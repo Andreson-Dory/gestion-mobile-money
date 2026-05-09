@@ -22,8 +22,6 @@ import com.mobilemoney.model.Client;
 import com.mobilemoney.model.Envoi;
 import com.mobilemoney.service.ClientService;
 import com.mobilemoney.service.EnvoiService;
-import com.mobilemoney.service.FraisEnvoiService;
-import com.mobilemoney.service.FraisRecepService;
 
 /**
  * Servlet implementation class ClientServlet
@@ -115,6 +113,7 @@ public class ClientServlet extends HttpServlet {
 		String mail = request.getParameter("mail");
 		
 		if (isInvalid(numtel, nom, sexe, a, mail)) {
+			request.getSession().setAttribute("error", "Veuillez completer tous les champs !");
 			response.sendRedirect(request.getContextPath() + "/client");
 		    return;
 		}
@@ -128,7 +127,7 @@ public class ClientServlet extends HttpServlet {
 		}
 		
 		Client newClient = new Client(numtel, nom, sexe, age, mail);
-		clientService.createClient(newClient);
+		clientService.createClient(request, response, newClient);
 		response.sendRedirect(request.getContextPath() + "/client");
 	}
 	
@@ -156,6 +155,7 @@ public class ClientServlet extends HttpServlet {
 		String mail = request.getParameter("mail");
 		
 		if (isInvalid(numtel, nom, sexe, a, mail)) {
+			request.getSession().setAttribute("error", "Veuillez completer tous les champs !");
 			response.sendRedirect(request.getContextPath() + "/client/new");
 		    return;
 		}
@@ -171,20 +171,32 @@ public class ClientServlet extends HttpServlet {
 		}
 		
 		Client updatedClient = new Client(numtel, nom, sexe, age, solde, mail);
-		clientService.updateClient(updatedClient);
+		clientService.updateClient(request, response, updatedClient);
 		response.sendRedirect(request.getContextPath() + "/client");
 	}
 	
 	private void generatePDF(HttpServletRequest request, HttpServletResponse response, Client client, List<Envoi> envois) throws ServletException, IOException {
-		response.setContentType("application/pdf");
-
-        response.setHeader(
-                "Content-Disposition",
-                "attachment; filename=releve-client.pdf"
-        );
-        
+		String date = request.getParameter("date");
+        String month = date.split("-")[1];
+        String year = date.split("-")[0];
         AtomicInteger credit = new AtomicInteger(0);
         AtomicInteger debit = new AtomicInteger(0);
+        
+        String[] Mois = {
+        	"",
+        	"Janvier", 
+        	"Fevrier",
+        	"Mars",
+        	"Avril",
+        	"Mai",
+        	"Juin",
+        	"Juillet",
+        	"Août",
+        	"Septembre",
+        	"Octobre",
+        	"Novembre",
+        	"Decembre"
+        };
         
         envois.forEach(envoi -> {
         	if(envoi.getNumEnvoyeur().equals(client.getNumtel())) {
@@ -193,6 +205,15 @@ public class ClientServlet extends HttpServlet {
         		credit.addAndGet(envoi.getMontant());
         	}
         });
+		
+		response.setContentType("application/pdf");
+		
+        response.setHeader(
+                "Content-Disposition",
+                "attachment; filename=releve-d'opération-" + Mois[Integer.valueOf(month)] + "-" + year + "-" + client.getNom()  + ".pdf"
+        );
+        
+        
         
         try {
 
@@ -208,7 +229,7 @@ public class ClientServlet extends HttpServlet {
             // ===== TITRE =====
 
             Paragraph titre = new Paragraph(
-                    "Date : Avril 2024",
+                    "Date : " + Mois[Integer.valueOf(month)] + " " + year,
                     FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)
             );
 
@@ -280,16 +301,19 @@ public class ClientServlet extends HttpServlet {
             ));
 
             document.close();
-
+            
+            request.getSession().setAttribute("success", "PDF généré !");
         } catch (Exception e) {
+        	request.getSession().setAttribute("error", "Erreur lors de la génération du PDF !");
             e.printStackTrace();
         }
 	}
 	
 	private void handleGeneratePDF(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String numtel = request.getParameter("numtel");
+		String date = request.getParameter("date");
 		Client client = clientService.getClientByNumtel(numtel);
-		List<Envoi> envois = envoiService.getClientMonthlyEnvoi(numtel);
+		List<Envoi> envois = envoiService.getClientMonthlyEnvoi(numtel, date);
 		
 		generatePDF(request, response, client, envois);
 		response.sendRedirect(request.getContextPath() + "/client");
@@ -299,11 +323,12 @@ public class ClientServlet extends HttpServlet {
 		String numtel = request.getParameter("numtel");
 		
 		if (isInvalid(numtel)) {
+			request.getSession().setAttribute("error", "Client non défini !");
 			response.sendRedirect(request.getContextPath() + "/client");
 		    return;
 		}
 		
-		clientService.deleteClient(numtel);
+		clientService.deleteClient(request, response, numtel);
 		response.sendRedirect(request.getContextPath() + "/client");
 	}
 	

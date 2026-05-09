@@ -11,13 +11,16 @@ import com.mobilemoney.model.Envoi;
 import com.mobilemoney.model.FraisEnvoi;
 import com.mobilemoney.model.FraisRecep;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 public class EnvoiService {
 	private EnvoiDAO envoiDAO = new EnvoiDAO();
 	private FraisEnvoiDAO fraisEnvoiDAO = new FraisEnvoiDAO();
 	private FraisRecepDAO fraisRecepDAO = new FraisRecepDAO(); 
 	private ClientDAO clientDAO = new ClientDAO();
 	
-	public void createEnvoi(Envoi envoi) {
+	public void createEnvoi(HttpServletRequest request, HttpServletResponse response, Envoi envoi) {
 		String numtelEnv = envoi.getNumEnvoyeur();
 		String numtelRec = envoi.getNumRecepteur();
 		boolean payerFR = envoi.isPayerFraisRetrait();
@@ -38,11 +41,20 @@ public class EnvoiService {
 		int soldeRec = Recepteur.getSolde();
 		
 		fraisEnvoi = fraisEnvoiDAO.findByMontant(montant);
-		fe = fraisEnvoi.getFraisEnv();
+		if(fraisEnvoi != null) {
+			fe = fraisEnvoi.getFraisEnv();
+		}else {
+			fe = 5000;
+		}
+		
 		
 		if(payerFR) {
 			fraisRecep = fraisRecepDAO.findByMontant(montant);
-			fr = fraisRecep.getFraisRec();
+			if(fraisRecep != null) {
+				fr = fraisRecep.getFraisRec();
+			}else {
+				fr = 5000;
+			}
 		}
 		
 		montantTotal = montant + fe + fr;
@@ -53,11 +65,11 @@ public class EnvoiService {
 		int newSoldeRec = soldeRec + montantTotal;
 		Envoyeur.setSolde(newSoldeEnv);
 		Recepteur.setSolde(newSoldeRec);
-		clientDAO.update(Envoyeur);
-		clientDAO.update(Recepteur);
+		clientDAO.update(request, response, Envoyeur);
+		clientDAO.update(request, response, Recepteur);
 		
 		envoi.setMontant(montantTotal);
-		envoiDAO.insertEnvoi(envoi);
+		envoiDAO.insertEnvoi(request, response, envoi);
 
 	    EmailService emailService = new EmailService();
 
@@ -115,16 +127,16 @@ public class EnvoiService {
 		return envoiDAO.findAllEnvoi();
 	}
 	
-	public List<Envoi> getClientMonthlyEnvoi(String numtel) {
-		return envoiDAO.findClientMonthlyEnvoi(numtel);
+	public List<Envoi> getClientMonthlyEnvoi(String numtel, String date) {
+		return envoiDAO.findClientMonthlyEnvoi(numtel, date);
 	}
 
 	public List<Envoi> searchEnvoi(String date) {
 		return envoiDAO.searchByDate(date);
 	}
 	
-	public void deleteEnvoi(String numtel) {
-		envoiDAO.deleteEnvoi(numtel);
+	public void deleteEnvoi(HttpServletRequest request, HttpServletResponse response, String numtel) {
+		envoiDAO.deleteEnvoi(request, response, numtel);
 	}
 
 	

@@ -13,7 +13,7 @@ import com.mobilemoney.model.Activite;
 import com.mobilemoney.model.Statistique;
 import com.mobilemoney.service.dashboardService;
 
-@WebServlet("/")
+@WebServlet("")
 public class dashboardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private dashboardService service = new dashboardService();

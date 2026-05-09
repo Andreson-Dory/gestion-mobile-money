@@ -5,11 +5,14 @@ import java.util.List;
 import com.mobilemoney.dao.ClientDAO;
 import com.mobilemoney.model.Client;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 public class ClientService {
 	private ClientDAO clientDAO = new ClientDAO();
 	
-	public void createClient(Client client) {
-		clientDAO.insert(client);
+	public void createClient(HttpServletRequest request, HttpServletResponse response, Client client) {
+		clientDAO.insert(request, response, client);
 	}
 	
 	public List<Client> getAllClients() {
@@ -24,11 +27,11 @@ public class ClientService {
 		return clientDAO.searchClients(value);
 	}
 	
-	public void updateClient(Client client) {
-		clientDAO.update(client);
+	public void updateClient(HttpServletRequest request, HttpServletResponse response, Client client) {
+		clientDAO.update(request, response, client);
 	}
 	
-	public void deleteClient(String numtel) {
-		clientDAO.delete(numtel);
+	public void deleteClient(HttpServletRequest request, HttpServletResponse response, String numtel) {
+		clientDAO.delete(request, response, numtel);
 	}
 }

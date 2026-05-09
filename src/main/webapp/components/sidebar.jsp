@@ -109,6 +109,36 @@
 	    background-color: #f8fafc;
 	    transition: 0.2s;
 	}
+	
+	.toast {
+	    visibility: hidden;
+	    min-width: 250px;
+	    text-align: center;
+	    border-radius: 8px;
+	    padding: 12px;
+	    position: fixed;
+	    z-index: 9999;
+	    bottom: 30px;
+	    right: 30px;
+	    opacity: 0;
+	    color: white;
+	    transition: all 0.4s ease;
+	}
+
+	.toast.show {
+	    visibility: visible;
+	    opacity: 1;
+	    bottom: 50px;
+	}
+	
+	.toast.success {
+	    background-color: #2ecc71;
+	}
+	
+	.toast.error {
+	    background-color: #e74c3c;
+	}
+
 </style>
 <div class="sidebar">
 	<h2 class="d-flex mx-3 my-4 gap-2 align-items-center">
@@ -123,7 +153,7 @@
 		String currentPath = request.getRequestURI();
 		String contextPath = request.getContextPath();	
 	
-		String homePath = contextPath + "/";
+		String homePath = contextPath + "";
 		String clientPath = contextPath + "/client";
 		String envoiPath = contextPath + "/envoi";
 		String retraitPath = contextPath + "/retrait";

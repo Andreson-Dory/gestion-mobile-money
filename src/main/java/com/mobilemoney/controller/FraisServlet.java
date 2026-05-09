@@ -124,6 +124,7 @@ public class FraisServlet extends HttpServlet {
 		}
 				
 		if (isInvalid(m1, m2, f, frais)) {
+	        request.getSession().setAttribute("error", "Veuillez completer tous les champs !");
 			response.sendRedirect(request.getContextPath() + "/frais?f=" + frais);
 		    return;
 		}
@@ -142,10 +143,10 @@ public class FraisServlet extends HttpServlet {
 		
 		if("envoi".equals(frais)) {
 			FraisEnvoi newFraisEnvoi= new FraisEnvoi(montant1, montant2, fr);
-			fraisEnvoiService.createFraisEnvoi(newFraisEnvoi);
+			fraisEnvoiService.createFraisEnvoi(request, response, newFraisEnvoi);
 		} else {
 			FraisRecep newFraisRecep= new FraisRecep(montant1, montant2, fr);
-			fraisRecepService.createFraisRecep(newFraisRecep);
+			fraisRecepService.createFraisRecep(request, response, newFraisRecep);
 		}
 		
 		response.sendRedirect(request.getContextPath() + "/frais?f=" + frais);
@@ -167,6 +168,7 @@ public class FraisServlet extends HttpServlet {
 		}
 				
 		if (isInvalid(m1, m2, i, f, frais)) {
+			request.getSession().setAttribute("error", "Veuillez completer tous les champs !");
 			response.sendRedirect(request.getContextPath() + "/frais?f=" + frais);
 		    return;
 		}
@@ -187,10 +189,10 @@ public class FraisServlet extends HttpServlet {
 		
 		if("envoi".equals(frais)) {
 			FraisEnvoi newFraisEnvoi= new FraisEnvoi(id, montant1, montant2, fr);
-			fraisEnvoiService.updateFraisEnvoi(newFraisEnvoi);
+			fraisEnvoiService.updateFraisEnvoi(request, response, newFraisEnvoi);
 		} else {
 			FraisRecep newFraisRecep= new FraisRecep(id, montant1, montant2, fr);
-			fraisRecepService.updateFraisRecep(newFraisRecep);
+			fraisRecepService.updateFraisRecep(request, response, newFraisRecep);
 		}
 		
 		response.sendRedirect(request.getContextPath() + "/frais?f=" + frais);
@@ -207,6 +209,7 @@ public class FraisServlet extends HttpServlet {
 		}
 		
 		if (isInvalid(i)) {
+			request.getSession().setAttribute("error", "Frais non défini !");
 			response.sendRedirect(request.getContextPath() + "/frais?f=" + frais);
 		    return;
 		}
@@ -220,9 +223,9 @@ public class FraisServlet extends HttpServlet {
 		}
 		
 		if("envoi".equals(frais)) {
-			fraisEnvoiService.deleteFraisEnvoi(id);
+			fraisEnvoiService.deleteFraisEnvoi(request, response, id);
 		} else {
-			fraisRecepService.deleteFraisRecep(id);
+			fraisRecepService.deleteFraisRecep(request, response, id);
 		}
 		response.sendRedirect(request.getContextPath() + "/frais?f=" + frais);
 	}

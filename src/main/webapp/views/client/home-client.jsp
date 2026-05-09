@@ -9,6 +9,10 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/bootstrap-5.3.8/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/global.css">
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css">
 </head>
 <body>
 	<div class="d-flex vh-100">
@@ -94,20 +98,15 @@
 	            <td>${client.age}</td>
 	            <td class="text-success">${client.solde}</td>
 	            <td style="white-space: nowrap;">
-					<form action="${pageContext.request.contextPath}/client/pdf"
-				      method="post"
-				      style="display:inline;"
-				      >
-					    <input type="hidden"
-					           name="numtel"
-					           value="${client.numtel}">
-					
-					    <button type="submit"
-					            class="btn btn-primary"
-					    >
-					        Générer PDF
-					    </button>
-					</form>
+					<a href="#"
+						class="btn btn-primary"
+						data-bs-toggle="modal"
+						data-bs-target="#pdfModal"
+						data-numtel="${client.numtel}"
+					>
+						Générer PDF
+					</a>
+										
 				    <a href="#"
 					   class="btn btn-sm btn-outline-secondary"
 					   data-bs-toggle="modal"
@@ -311,9 +310,104 @@
 	        	</div>
 	    	</div>
 		</div>
+		
+		<!-- Modal Générer PDF -->
+		<div class="modal fade"
+	     id="pdfModal"
+	     tabindex="-1"
+	     aria-labelledby="pdfModalLabel"
+	     aria-hidden="true">
+	
+	    <div class="modal-dialog modal-dialog-centered modal-lg"
+	    	 style="max-width: 600px;">
+	        <div class="modal-content mx-1">
+	            <!-- Header -->
+	            <div class="modal-header">
+	                <h5 class="modal-title fw-bold" id="addClientModalLabel">
+	                    Générer PDF
+	                </h5>
+	                <button type="button"
+	                        class="btn-close"
+	                        data-bs-dismiss="modal"
+	                        aria-label="Close">
+	                </button>
+	            </div>
+	            
+	            <form action="${pageContext.request.contextPath}/client/pdf"
+				      method="post"
+				      style="display:inline;"
+				      >
+				      <div class="modal-body">
+					    <input type="hidden"
+					    	   id="pdf_numtel"
+					           name="numtel">
+
+						<input type="text"
+						       id="monthPicker"
+						       name="date"
+						       class="form-control">
+						
+						<!-- JS -->
+						<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+						
+						<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
+						
+						<script>
+							flatpickr("#monthPicker", {
+							    plugins: [
+							        new monthSelectPlugin({
+							            shorthand: true,
+							            dateFormat: "Y-m",
+							            altFormat: "F Y"
+							        })
+							    ]
+							});
+						</script>
+											
+						<!-- Footer -->
+	                	<div class="modal-footer">
+							<button type="button"
+		                            class="btn btn-secondary"
+		                            data-bs-dismiss="modal">
+		                        Annuler
+		                    </button>
+							
+						    <button type="submit"
+						            class="btn btn-primary"
+						    >
+						        Générer
+						    </button>
+					    </div>
+					    </div>
+					</form>
+				</div>
+			</div>
+		</div>
+		
+		<div class="toast-container position-fixed bottom-0 end-0 p-3">
+		    <div id="liveToast"
+		         class="toast align-items-center text-bg-success border-0"
+		         role="alert"
+		         aria-live="assertive"
+		         aria-atomic="true">
+		
+		        <div class="d-flex">
+		            <div class="toast-body" id="toastMessage">
+		                Message ici
+		            </div>
+		
+		            <button type="button"
+		                    class="btn-close btn-close-white me-2 m-auto"
+		                    data-bs-dismiss="toast">
+		            </button>
+		        </div>
+		    </div>
+		</div>
+		
 		<script src="${pageContext.request.contextPath}/assets/bootstrap-5.3.8/js/bootstrap.bundle.min.js"></script>
 		<script>
 			const editModal = document.getElementById('editClientModal');
+			const pdfModal = document.getElementById('pdfModal');
 			
 			editModal.addEventListener('show.bs.modal', function (event) {
 			
@@ -327,7 +421,47 @@
 			    document.getElementById('edit_solde').value = button.getAttribute('data-solde');
 			
 			});
+			
+			pdfModal.addEventListener('show.bs.modal', function (event) {
+				const button = event.relatedTarget;
+				
+				document.getElementById('pdf_numtel').value = button.getAttribute('data-numtel');
+			});
 		</script>
+		<script>
+		    function showToast(message, type) {
+		
+		        const toastElement = document.getElementById('liveToast');
+		        const toastMessage = document.getElementById('toastMessage');
+		
+		        toastMessage.textContent = message;
+		
+		        toastElement.classList.remove('text-bg-success');
+		        toastElement.classList.remove('text-bg-danger');
+		
+		        if (type === 'success') {
+		            toastElement.classList.add('text-bg-success');
+		        } else if (type === 'error') {
+		            toastElement.classList.add('text-bg-danger');
+		        }
+		
+		        const toast = new bootstrap.Toast(toastElement);
+		        toast.show();
+		    }
+		</script>
+		<c:if test="${not empty sessionScope.success}">
+		    <script>
+		        showToast("${sessionScope.success}", "success");
+		    </script>
+		    <c:remove var="success" scope="session"/>
+		</c:if>
+		
+		<c:if test="${not empty sessionScope.error}">
+		    <script>
+		        showToast("${sessionScope.error}", "error");
+		    </script>
+		    <c:remove var="error" scope="session"/>
+		</c:if>
 	</div>
 	</div>
 </body>

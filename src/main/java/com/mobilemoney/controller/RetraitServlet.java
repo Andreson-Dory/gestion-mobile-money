@@ -129,6 +129,7 @@ public class RetraitServlet extends HttpServlet {
 		String m = request.getParameter("montant");
 		
 		if (isInvalid(numtel, m)) {
+			request.getSession().setAttribute("error", "Veuillez completer tous les champs !");
 			response.sendRedirect(request.getContextPath() + "/retrait");
 		    return;
 		}
@@ -142,7 +143,7 @@ public class RetraitServlet extends HttpServlet {
 		}
 		
 		Retrait newRetrait= new Retrait(numtel, montant);
-		retraitService.doRetrait(newRetrait);
+		retraitService.doRetrait(request, response, newRetrait);
 		response.sendRedirect(request.getContextPath() + "/retrait");
 	}
 	
@@ -150,11 +151,12 @@ public class RetraitServlet extends HttpServlet {
 		String idRecep = request.getParameter("idRecep");
 		
 		if (isInvalid(idRecep)) {
+			request.getSession().setAttribute("error", "Retrait non défini !");
 			response.sendRedirect(request.getContextPath() + "/retrait");
 		    return;
 		}
 		
-		retraitService.deleteRetrait(idRecep);
+		retraitService.deleteRetrait(request, response, idRecep);
 		response.sendRedirect(request.getContextPath() + "/retrait");
 	}
 }

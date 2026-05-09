@@ -181,6 +181,27 @@
 		        </div>
 		    </div>
 		</div>
+		
+		<div class="toast-container position-fixed bottom-0 end-0 p-3">
+		    <div id="liveToast"
+		         class="toast align-items-center text-bg-success border-0"
+		         role="alert"
+		         aria-live="assertive"
+		         aria-atomic="true">
+		
+		        <div class="d-flex">
+		            <div class="toast-body" id="toastMessage">
+		                Message ici
+		            </div>
+		
+		            <button type="button"
+		                    class="btn-close btn-close-white me-2 m-auto"
+		                    data-bs-dismiss="toast">
+		            </button>
+		        </div>
+		    </div>
+		</div>
+		
 		<script src="${pageContext.request.contextPath}/assets/bootstrap-5.3.8/js/bootstrap.bundle.min.js"></script>
 		<script src="${pageContext.request.contextPath}/assets/js/jquery-4.0.0.min.js"></script>
 		<script src="${pageContext.request.contextPath}/assets/js/select2.min.js"></script>
@@ -194,6 +215,40 @@
 			    });
 			});
 		</script>
+		<script>
+		    function showToast(message, type) {
+		
+		        const toastElement = document.getElementById('liveToast');
+		        const toastMessage = document.getElementById('toastMessage');
+		
+		        toastMessage.textContent = message;
+		
+		        toastElement.classList.remove('text-bg-success');
+		        toastElement.classList.remove('text-bg-danger');
+		
+		        if (type === 'success') {
+		            toastElement.classList.add('text-bg-success');
+		        } else if (type === 'error') {
+		            toastElement.classList.add('text-bg-danger');
+		        }
+		
+		        const toast = new bootstrap.Toast(toastElement);
+		        toast.show();
+		    }
+		</script>
+		<c:if test="${not empty sessionScope.success}">
+		    <script>
+		        showToast("${sessionScope.success}", "success");
+		    </script>
+		    <c:remove var="success" scope="session"/>
+		</c:if>
+		
+		<c:if test="${not empty sessionScope.error}">
+		    <script>
+		        showToast("${sessionScope.error}", "error");
+		    </script>
+		    <c:remove var="error" scope="session"/>
+		</c:if>
 		</div>
 		
 	</div>

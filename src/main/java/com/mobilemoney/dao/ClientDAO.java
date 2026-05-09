@@ -11,6 +11,9 @@ import java.util.List;
 import com.mobilemonay.util.DBConnection;
 import com.mobilemoney.model.Client;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 public class ClientDAO {
 
 	private static final String INSERT_CLIENT_QUERY = "INSERT INTO CLIENT (numtel, nom, sexe, age, mail) VALUES (?, ?, ?, ?, ?);";
@@ -21,7 +24,7 @@ public class ClientDAO {
 	private static final String DELETE_CLIENT_QUERY = "DELETE FROM CLIENT WHERE numtel= ?;";
 	
 	
-	public void insert (Client c) {
+	public void insert (HttpServletRequest request, HttpServletResponse response, Client c) {
 		try(Connection conn = DBConnection.getConnection();
 			PreparedStatement ps = conn.prepareStatement(INSERT_CLIENT_QUERY))
 		{
@@ -31,8 +34,10 @@ public class ClientDAO {
 			ps.setInt(4, c.getAge());
 			ps.setString(5, c.getMail());
 			
-			ps.executeUpdate();			
+			ps.executeUpdate();		
+			request.getSession().setAttribute("success", "Client ajouter avec succès !");
 		} catch (SQLException e) {
+	        request.getSession().setAttribute("error", "Erreur lors de l'ajout du client !");
 			e.printStackTrace();
 		};
 	}
@@ -115,20 +120,21 @@ public class ClientDAO {
 		return list;
 	}
 	
-	public void delete(String numtel) {
+	public void delete(HttpServletRequest request, HttpServletResponse response, String numtel) {
 		
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(DELETE_CLIENT_QUERY)) {
 
             ps.setString(1, numtel);
             ps.executeUpdate();
-
+    		request.getSession().setAttribute("success", "Client mis à jour avec succès !");
         } catch (SQLException ex) {
+	        request.getSession().setAttribute("error", "Erreur lors de la mise à jour du client !");
             ex.printStackTrace();
         }
 	}
 	
-	public void update(Client c) {
+	public void update(HttpServletRequest request, HttpServletResponse response, Client c) {
 		
 		try (Connection conn = DBConnection.getConnection();
 			PreparedStatement ps = conn.prepareStatement(UPDATE_CLIENT_QUERY)) 
@@ -141,8 +147,9 @@ public class ClientDAO {
 			ps.setString(6, c.getNumtel());
 			
 			ps.executeUpdate();
-		
+			request.getSession().setAttribute("success", "Client supprimé avec succès !");
 		} catch (SQLException ex) {
+	        request.getSession().setAttribute("error", "Erreur lors de la suppression du client !");
 			ex.printStackTrace();
 		}
 	}

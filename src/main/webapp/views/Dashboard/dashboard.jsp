@@ -17,10 +17,6 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/global.css">
 
 <style>
-body {
-    background-color: #f5f6fa;
-}
-
 /* Cartes */
 .card-box {
     border-radius: 12px;
@@ -47,7 +43,6 @@ body {
     padding: 10px 0;
 }
 </style>
-
 </head>
 <body>
 <div class="d-flex vh-100">
@@ -65,17 +60,18 @@ body {
 	    ActiviteDAO dao = new ActiviteDAO();
 	    List<Activite> activites = dao.getActivitesRecentes();
 	%>
+	
 	<div class="flex-grow-1">
-		<h2 class="mb-4">Tableau de Bord</h2>
+		<h2 class="my-4 mx-3 fw-bold">Tableau de Bord</h2>
 		
-		<div class="row g-3">
+		<div class="row g-3 my-4 mx-3">
 		
 		    <!-- Recette Totale -->
 		    <div class="col-md-4">
 		        <div class="card-box d-flex justify-content-between">
 		            <div>
 		                <h6>Recette Totale</h6>
-		                <h4><%= total %> F CFA</h4>
+		                <h4><%= total %> Ar</h4>
 		                <small>Frais collectés</small>
 		            </div>
 		            <div class="icon-box green">$</div>
@@ -87,7 +83,7 @@ body {
 		        <div class="card-box d-flex justify-content-between">
 		            <div>
 		                <h6>Recette Frais de Retrait</h6>
-		                <h4><%= fraisRetrait %> F CFA</h4>
+		                <h4><%= fraisRetrait %> Ar</h4>
 		                <small><%= nbRetrait %> retraits</small>
 		            </div>
 		            <div class="icon-box blue">$</div>
@@ -99,7 +95,7 @@ body {
 		        <div class="card-box d-flex justify-content-between">
 		            <div>
 		                <h6>Recette Frais d'Envois</h6>
-		                <h4><%= fraisEnvoi %> F CFA</h4>
+		                <h4><%= fraisEnvoi %> Ar</h4>
 		                <small><%= nbEnvoi %> envois</small>
 		            </div>
 		            <div class="icon-box orange">$</div>
@@ -109,7 +105,7 @@ body {
 		</div>
 		
 		<!-- ACTIVITÉ -->
-		<div class="card-box mt-4">
+		<div class="card-box my-4 mx-3">
 		    <h5>Activité récente</h5>
 		
 		    <% for(Activite a : activites){ %>
@@ -117,14 +113,14 @@ body {
 		
 		            <div>
 		                <b>
-		                    <%= a.getType().equals("ENVOI") ? "Envoi vers " + a.getClient() : "Retrait" %>
+		                    <%= a.getType().equals("ENVOI") ? "Envoi vers " + a.getClient() : "Retrait par " + a.getClient() %>
 		                </b>
 		                <br>
 		                <small><%= a.getDate() %></small>
 		            </div>
 		
 		            <div>
-		                <b><%= a.getMontant() %> F CFA</b>
+		                <b><%= a.getMontant() %> Ar</b>
 		            </div>
 		
 		        </div>
